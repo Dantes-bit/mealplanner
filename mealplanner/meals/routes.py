@@ -143,7 +143,9 @@ def choose_meal(day, meal_id):
     if meal:
         setattr(current_user, day.lower(), meal_id)
         db.session.commit()
-        display_day = day[:-1]
+        display_day = day
+        if display_day and display_day[-1].isdigit():
+            display_day = day[:-1]
         flash(f'{meal.name} is selected for {display_day}!', 'success')
         return redirect(url_for('main.home'))
 
