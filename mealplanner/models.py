@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     bio = db.Column(db.Text, default='My bio.')
     email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(255), nullable=False, default='https://res.cloudinary.com/xx1thsdq/image/upload/v1785588165/e130a2fd081397a9_dn5fr8.png')
+    image_file = db.Column(db.String(255), nullable=False, default='https://res.cloudinary.com/xx1thsdq/image/upload/v1785588477/default_k2m7po.png')
     password = db.Column(db.String(60), nullable=False)
     meals = db.relationship('Meal', backref='author', lazy=True)
     monday = db.Column(db.Integer, default=0)
