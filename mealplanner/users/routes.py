@@ -67,7 +67,7 @@ def account(user_id):
             db.session.commit()
             flash('Your picture has been updated!', 'success')
         return redirect(url_for('users.account', user_id=user.id))
-    image_file = url_for('static', filename='profile_pics/' + user.image_file )
+    image_file = user.image_file
 
     meals = Meal.query.filter((Meal.visibility == 'public') | (Meal.visibility == 'followers')
     ).order_by(Meal.id.desc()).paginate(per_page=9, page=page)
@@ -97,7 +97,7 @@ def edit_account(user_id):
         form.username.data = user.username
         form.bio.data = user.bio
         form.private.data = user.private
-    image_file = url_for('static', filename='profile_pics/' + user.image_file)
+    image_file = user.image_file
     return render_template('users/edit_account.html', title='Account', image_file=image_file, form=form, picture_form=picture_form, user=user)
 
 @users.route("/account/<int:user_id>/reset_email", methods=['GET', 'POST'])

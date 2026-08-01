@@ -10,7 +10,7 @@
                         {% for requester in requests %}
                             <div class="content-section text-center mb-3">
                                 <a href="{{ url_for('users.account', user_id=requester.id) }}" class="text-decoration-none">
-                                    <img src="{{ url_for('static', filename='profile_pics/' + requester.image_file) }}" width="60" height="60" class="rounded-circle mb-2">
+                                    <img src="{{ user.image_file }}" width="60" height="60" class="rounded-circle mb-2">
                                     <p class="fw-bold mb-1">{{ requester.username }}</p>
                                 </a>
                                 <p class="mb-3">has requested to follow you.</p>

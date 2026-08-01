@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from mealplanner.config import Config
+import cloudinary
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -17,6 +18,11 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    cloudinary.config(
+        cloud_name=app.config.get('CLOUDINARY_CLOUD_NAME'),
+        api_key=app.config.get('CLOUDINARY_API_KEY'),
+        api_secret=app.config.get('CLOUDINARY_API_SECRET')
+    )
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)

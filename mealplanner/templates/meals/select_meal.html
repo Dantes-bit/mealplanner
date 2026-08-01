@@ -12,7 +12,7 @@
                                 <div>
                                     <a href="{{ url_for('meals.choose_meal', day=day, meal_id=meal.id) }}">
                                         <div class="text-center">
-                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <img src="{{ meal.image_file }}" width="125" height="125">
                                             <p>{{ meal.name }}</p>    
                                             <p>ETA: {{ meal.time }}</p>
                                         </div>
@@ -36,7 +36,7 @@
                                 <div>
                                     <a href="{{ url_for('meals.choose_meal', day=day, meal_id=meal.id) }}">
                                         <div class="text-center">
-                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <img src="{{ meal.image_file }}" width="125" height="125">
                                             <p>{{ meal.name }}</p>    
                                             <p>ETA: {{ meal.time }}</p>
                                         </div>

@@ -2,7 +2,7 @@
 {% block content %}
     <div class="col">
         <h1>{{ meal.name }}</h1>
-        <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}">
+        <img src="{{ meal.image_file }}">
         <p>ETA: {{ meal.time }}</p>
         <div>
             <p class="fw-bold mb-1">Ingredients:</p>

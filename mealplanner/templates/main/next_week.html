@@ -15,7 +15,7 @@
                                     </div>
                                     <div class="calender-body">
                                         {% if meal %}
-                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <img src="{{ meal.image_file }}" width="125" height="125">
                                             <p class="meal-text">{{ meal.name }}</p>
                                             <p class="meal-text">ETA: {{ meal.time }}</p>
                                         {% else %}
@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="calender-body">
                                         {% if meal %}
-                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <img src="{{ meal.image_file }}" width="125" height="125">
                                             <p class="meal-text">{{ meal.name }}</p>
                                             <p class="meal-text">ETA: {{ meal.time }}</p>
                                         {% else %}

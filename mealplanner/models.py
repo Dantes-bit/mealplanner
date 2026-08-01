@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     bio = db.Column(db.Text, default='My bio.')
     email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.png')
+    image_file = db.Column(db.String(255), nullable=False, default='https://res.cloudinary.com/xx1thsdq/image/upload/v1785588165/e130a2fd081397a9_dn5fr8.png')
     password = db.Column(db.String(60), nullable=False)
     meals = db.relationship('Meal', backref='author', lazy=True)
     monday = db.Column(db.Integer, default=0)
@@ -110,7 +110,7 @@ class Meal(db.Model):
     name = db.Column(db.String(100), nullable=False)
     recipe = db.Column(db.Text, nullable=False)
     time = db.Column(db.String(15), nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default_meal.png')
+    image_file = db.Column(db.String(255), nullable=False, default='https://res.cloudinary.com/xx1thsdq/image/upload/v1785588251/default_meal_phepg2.png')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     ingredient_list = db.relationship('Ingredient', backref='meal', lazy=True, cascade='all, delete-orphan')
 

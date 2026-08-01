@@ -7,7 +7,7 @@
                 <div>
                     <a href="{{ url_for('meals.meal', meal_id=meal.id) }}">
                         <div>
-                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                            <img src="{{ meal.image_file }}" width="125" height="125">
                             <p>{{ meal.name }}</p>    
                             <p>ETA: {{ meal.time }}</p>
                         </div>

@@ -1,15 +1,16 @@
-import os
-import secrets
+import io
+import cloudinary.uploader
 from PIL import Image
-from flask import current_app
 
 def save_meal_picture(form_picture):
-    random_hex = secrets.token_hex(8)
-    f_name, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(current_app.root_path, 'static/meal_pics', picture_fn)
     output_size = (500, 500)
     i = Image.open(form_picture)
     i.thumbnail(output_size)
-    i.save(picture_path)
-    return picture_fn
+
+    buffer = io.BytesIO()
+    img_format = i.format if i.format else 'PNG'
+    i.save(buffer, format=img_format)
+    buffer.seek(0)
+
+    result = cloudinary.uploader.upload(buffer, folder="meal_pics")
+    return result['secure_url']
