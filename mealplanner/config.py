@@ -16,5 +16,5 @@ class Config:
     MAIL_USERNAME = os.environ.get('EMAIL_USER')
     MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
     VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY')
-    VAPID_PRIVATE_KEY_PATH = os.environ.get('VAPID_PRIVATE_KEY_PATH')
+    VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY')
     VAPID_CLAIM_EMAIL = os.environ.get('VAPID_CLAIM_EMAIL')
