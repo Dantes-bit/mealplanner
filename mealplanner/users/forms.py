@@ -32,10 +32,13 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
+class UpdatePictureForm(FlaskForm):
+    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
+    submit = SubmitField('Update Picture')
+
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[Length(min=2, max=20)])
     bio = TextAreaField('Bio', validators=[Length(max=450)])
-    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     private = BooleanField('Make account private?')
     submit = SubmitField('Update')
 

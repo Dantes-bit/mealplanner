@@ -1,7 +1,8 @@
 from flask import render_template, url_for, flash, redirect, request, abort, Blueprint, jsonify
 from mealplanner import db, bcrypt
 from mealplanner.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                                RequestResetForm, ResetPasswordForm, ChangeEmailForm)
+                                RequestResetForm, ResetPasswordForm, ChangeEmailForm,
+                                UpdatePictureForm)
 from mealplanner.models import User, Meal, PushSubscription, StorageItem
 from flask_login import login_user, current_user, logout_user, login_required
 from mealplanner.users.utils import save_picture, send_reset_email, send_shopping_email, send_change_email_request
@@ -78,13 +79,14 @@ def account(user_id):
 def edit_account(user_id):
     user = User.query.get_or_404(user_id)
     form = UpdateAccountForm()
+    picture_form = UpdatePictureForm()
+    if picture_form.validate_on_submit() and picture_form.picture.data:
+        picture_file = save_picture(picture_form.picture.data)
+        user.image_file = picture_file
+        db.session.commit()
+        flash('Your picture has been updated!', 'success')
+        return redirect(url_for('users.account', user_id=user.id))
     if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            user.image_file = picture_file
-            db.session.commit()
-            flash('Your picture has been updated!', 'success')
-            return redirect(url_for('users.account', user_id=user.id))
         user.username = form.username.data
         user.bio = form.bio.data
         user.private = form.private.data
@@ -95,8 +97,8 @@ def edit_account(user_id):
         form.username.data = user.username
         form.bio.data = user.bio
         form.private.data = user.private
-    image_file = url_for('static', filename='profile_pics/' + user.image_file )
-    return render_template('users/edit_account.html', title='Account', image_file=image_file, form=form, user=user)
+    image_file = url_for('static', filename='profile_pics/' + user.image_file)
+    return render_template('users/edit_account.html', title='Account', image_file=image_file, form=form, picture_form=picture_form, user=user)
 
 @users.route("/account/<int:user_id>/reset_email", methods=['GET', 'POST'])
 @login_required

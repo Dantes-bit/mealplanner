@@ -3,13 +3,11 @@
     <div class="content-section">
     <div class="media">
         <form method="POST" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
-            <label for="{{ form.picture.id }}" style="cursor: pointer;">
-                <img class="rounded-circle account-img ms-4" src="{{ image_file }}">
-                <br>
-                <div class="btn btn-outline-info">Change profile picture</div>
+            {{ picture_form.hidden_tag() }}
+            <label for="{{ picture_form.picture.id }}" style="cursor: pointer;">
+                <img class="rounded-circle account-img" src="{{ image_file }}">
             </label>
-            {{ form.picture(class="d-none", onchange="this.form.submit()") }}
+            {{ picture_form.picture(class="d-none", onchange="this.form.submit()") }}
         </form>
         <div class="text-end">
             <button type="button" class="btn btn-danger text-end" data-bs-toggle="modal" data-bs-target="#deleteModal">
