@@ -34,7 +34,7 @@
                     <div class="col-md-3 mb-3">
                         <a href="{{ url_for('meals.meal', meal_id=item.meal.id) }}" class="text-decoration-none">
                             <div class="content-section text-center h-100">
-                                <img src="{{ meal.image_file }}" width="125" height="125">
+                                <img src="{{ item.meal.image_file }}" width="125" height="125">
                                 <p class="mb-0">{{ item.meal.name }}</p>
                                 <p class="text-muted small mb-0">Missing: {{ item.missing | join(', ') }}</p>
                             </div>

@@ -19,7 +19,7 @@
                                     <p>ETA: {{ meal.time }}</p>
                                     <br>
                                     <div class="fw-bold content-section">
-                                        <img src="{{ user.image_file }}" width="25" height="25" class="rounded-circle">{{ meal.author.username }}
+                                        <img src="{{ meal.author.image_file }}" width="25" height="25" class="rounded-circle">{{ meal.author.username }}
                                         <div class="text-secondary ms-3">
                                             {{ meal.author.followers.count() }} followers
                                         </div>
