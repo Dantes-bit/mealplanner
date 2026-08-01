@@ -167,7 +167,7 @@ def reset_email(token, email):
 @users.route("/shopping_list/<username>")
 @login_required
 def shopping_list(username):
-    use_saved = request.args.get('use_saved', 'false') == 'true'
+    use_saved = request.args.get('use_saved', 'true') == 'true'
     user = User.query.filter_by(username=username).first_or_404()
     if user != current_user:
         abort(403)
