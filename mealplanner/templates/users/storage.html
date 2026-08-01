@@ -36,7 +36,7 @@
             <span>${value}</span>
             <input type="hidden" name="storage_name" value="${value}">
             <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
-                <i class="fas fa-trash"></i>
+                <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
             </button>
         `;
         ul.appendChild(li);
