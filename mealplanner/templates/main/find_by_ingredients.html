@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2 class="mb-4">What can I make?</h2>
+    <form method="GET" action="{{ url_for('main.find_by_ingredients') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" name="ingredients" placeholder="Kjøttdeig, Løk, Hvitløk, Tomat" value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Find recipes</button>
+        </div>
+        <small class="text-muted">Separate ingredients with commas</small>
+    </form>
+    {% if query %}
+        {% if exact_matches %}
+            <h4>You can make these</h4>
+            <div class="row mb-4">
+                {% if used_storage %}
+                    <p class="text-muted">Showing results based on your <a href="{{ url_for('users.storage', username=current_user.username) }}">storage</a>. <a href="?ingredients=">Search manually instead</a>.</p>
+                {% endif %}
+                {% for meal in exact_matches %}
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('meals.meal', meal_id=meal.id) }}" class="text-decoration-none">
+                            <div class="content-section text-center h-100">
+                                <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                <p class="mb-0">{{ meal.name }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if near_matches %}
+            <h4>Almost there</h4>
+            <div class="row mb-4">
+                {% for item in near_matches %}
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('meals.meal', meal_id=item.meal.id) }}" class="text-decoration-none">
+                            <div class="content-section text-center h-100">
+                                <img src="{{ url_for('static', filename='meal_pics/' + item.meal.image_file) }}" width="125" height="125">
+                                <p class="mb-0">{{ item.meal.name }}</p>
+                                <p class="text-muted small mb-0">Missing: {{ item.missing | join(', ') }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if not exact_matches and not near_matches %}
+            <p class="text-muted">No meals found matching the ingredients you listed.</p>
+        {% endif %}
+    {% endif %}
+{% endblock content %}

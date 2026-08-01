@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block content %}
+    <form id="ingredient-form" method="POST" action="{{ url_for('users.save_or_share') }}">
+        <ul id="ingredient-list">
+            {% for item in ingredients %}
+                {% set parts = item.rsplit(' x', 1) %}
+                {% set base_name = parts[0] %}
+                {% set quantity = parts[1] | int if parts|length > 1 and parts[1].isdigit() else 1 %}
+                
+                <li class="ingredient-item d-flex align-items-center" data-base-name="{{ base_name }}" data-quantity="{{ quantity }}">
+                    <span class="ingredient-name">{{ item }}</span>
+                    <input type="hidden" name="ingredients" value="{{ item }}">
+                    
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="increaseQuantity(this)">+</button>
+                    <button type="button" 
+                            class="btn btn-sm btn-outline-danger decrease-btn {{ '' if quantity > 1 else '' }}" 
+                            onclick="decreaseQuantity(this)">-</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeIngredient(this)">
+                        <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="d-flex align-items-center gap-2 mt-3 ms-5">
+            <input type="text" id="new-ingredient-input" class="form-control" placeholder="Add ingredient..." style="max-width: 250px;" onkeypress="if(event.key==='Enter'){event.preventDefault(); addIngredient();}">
+            <button type="button" class="btn btn-primary" onclick="addIngredient()">Add</button>
+        </div>
+        <div class="row ms-4">
+            <div class="col-md-4">
+                <br>
+                <a href="{{ url_for('users.shopping_list', username=user.username, use_saved='false') }}" class="btn btn-primary">
+                   Reset shopping list
+                </a>
+                <button type="submit" name="action" value="save" class="btn btn-primary col-md-2">Save</button>
+                <button type="submit" name="action" value="share" class="btn btn-primary col-md-2">Email</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+    function increaseQuantity(button) {
+        const li = button.closest('li');
+        let quantity = parseInt(li.dataset.quantity);
+        quantity += 1;
+        updateQuantity(li, quantity);
+    }
+
+    function decreaseQuantity(button) {
+        const li = button.closest('li');
+        let quantity = parseInt(li.dataset.quantity);
+        if (quantity > 1) {
+            quantity -= 1;
+            updateQuantity(li, quantity);
+        }
+    }
+
+    function updateQuantity(li, quantity) {
+        li.dataset.quantity = quantity;
+        const baseName = li.dataset.baseName;
+        const span = li.querySelector('.ingredient-name');
+        const hiddenInput = li.querySelector('input[name="ingredients"]');
+        const decreaseBtn = li.querySelector('.decrease-btn');
+
+        if (quantity > 1) {
+            span.textContent = `${baseName} x${quantity}`;
+            hiddenInput.value = `${baseName} x${quantity}`;
+            decreaseBtn.style.display = 'inline-block';
+        } else {
+            span.textContent = baseName;
+            hiddenInput.value = baseName;
+            decreaseBtn.style.display = 'none';
+        }
+    }
+
+    function removeIngredient(button) {
+        const li = button.closest('li');
+        li.remove();
+    }
+
+    function addIngredient() {
+        const input = document.getElementById('new-ingredient-input');
+        const value = input.value.trim();
+        if (value === '') return;
+
+        const ul = document.getElementById('ingredient-list');
+
+        const li = document.createElement('li');
+        li.className = 'ingredient-item d-flex align-items-center';
+        li.dataset.baseName = value;
+        li.dataset.quantity = '1';
+
+        li.innerHTML = `
+            <span class="ingredient-name">${value}</span>
+            <input type="hidden" name="ingredients" value="${value}">
+            <button type="button" class="btn btn-sm btn-outline-info" onclick="increaseQuantity(this)">+</button>
+            <button type="button" class="btn btn-sm btn-outline-danger decrease-btn" style="display: inline-block;" onclick="decreaseQuantity(this)">-</button>
+            <button type="button" class="btn btn-sm btn-danger" onclick="removeIngredient(this)">
+                <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
+            </button>
+        `;
+
+        ul.appendChild(li);
+        input.value = '';
+        input.focus();
+    }
+    </script>
+{% endblock content %}

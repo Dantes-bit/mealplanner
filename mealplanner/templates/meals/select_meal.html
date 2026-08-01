@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if see_all %}
+            <a class="btn btn-outline-info mb-4" href="{{ url_for('meals.select_meal', day=day, see_all='false') }}" class="btn btn-primary">My recipes</a>
+            <a class="btn btn-info mb-4" href="{{ url_for('meals.select_meal', day=day, see_all='true') }}" class="btn btn-primary">All recipes</a>
+            <div class="row">
+            {% for meal in meals.items %}
+                {% if meal.author == current_user or meal.visibility == 'public' or (meal.visibility == 'followers' and current_user.is_following(meal.author)) %}
+                    <div class="col-md-3 mb-3">
+                        <article class="media content-section h-100">
+                            <div class="media-body">
+                                <div>
+                                    <a href="{{ url_for('meals.choose_meal', day=day, meal_id=meal.id) }}">
+                                        <div class="text-center">
+                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <p>{{ meal.name }}</p>    
+                                            <p>ETA: {{ meal.time }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <a class="btn btn-info mb-4" href="{{ url_for('meals.select_meal', day=day, see_all='false') }}" class="btn btn-primary">My recipes</a>
+        <a class="btn btn-outline-info mb-4" href="{{ url_for('meals.select_meal', day=day, see_all='true') }}" class="btn btn-primary">All recipes</a>
+        <div class="row">
+            {% for meal in meals.items %}
+                {% if meal.author == current_user %}
+                    <div class="col-md-3 mb-3">
+                        <article class="media content-section h-100">
+                            <div class="media-body">
+                                <div>
+                                    <a href="{{ url_for('meals.choose_meal', day=day, meal_id=meal.id) }}">
+                                        <div class="text-center">
+                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <p>{{ meal.name }}</p>    
+                                            <p>ETA: {{ meal.time }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if meals.pages > 1 %}
+        {% for page_num in meals.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if meals.page == page_num %}
+                    <a class="btn btn-info mb-4" href="{{ url_for('meals.recipes', page=page_num) }}">{{ page_num }}</a>
+                {% else %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for('meals.recipes', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock content %}

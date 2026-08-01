@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2 class="mb-4">My Storage</h2>
+
+    <form id="storage-form" method="POST" action="{{ url_for('users.storage', username=user.username) }}">
+        <ul id="storage-list">
+            {% for item in items %}
+                <li class="d-flex align-items-center gap-2 mb-2">
+                    <span>{{ item }}</span>
+                    <input type="hidden" name="storage_name" value="{{ item }}">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="d-flex align-items-center gap-2 mt-3">
+            <input type="text" id="new-storage-input" class="form-control" placeholder="Add item..." style="max-width: 250px;" onkeypress="if(event.key==='Enter'){event.preventDefault(); addStorageItem();}">
+            <button type="button" class="btn btn-primary" onclick="addStorageItem()">Add</button>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Save</button>
+    </form>
+
+    <script>
+    function addStorageItem() {
+        const input = document.getElementById('new-storage-input');
+        const value = input.value.trim();
+        if (value === '') return;
+
+        const ul = document.getElementById('storage-list');
+        const li = document.createElement('li');
+        li.className = 'd-flex align-items-center gap-2 mb-2';
+        li.innerHTML = `
+            <span>${value}</span>
+            <input type="hidden" name="storage_name" value="${value}">
+            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        ul.appendChild(li);
+        input.value = '';
+        input.focus();
+    }
+    </script>
+{% endblock content %}

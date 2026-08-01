@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="col">
+        <h1>{{ meal.name }}</h1>
+        <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}">
+        <p>ETA: {{ meal.time }}</p>
+        <div>
+            <p class="fw-bold mb-1">Ingredients:</p>
+            <ul>
+                {% for ingredient in meal.ingredient_list %}
+                    <li>
+                        {{ ingredient.name }}
+                        {% if ingredient.substitute %}
+                            <span class="text-muted">(or {{ ingredient.substitute }})</span>
+                        {% endif %}
+                        {% if not ingredient.essential %}
+                            <span class="text-muted small">— optional</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <p>How to make it: {{ meal.recipe }}</p>
+        <div class="article-metadata fw-bold">
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+                <span style="width: 90px;">This week</span>
+                {% if current_user.monday == meal.id %}
+                    <a class="btn btn-info" href="{{ url_for('meals.choose_meal', day='monday', meal_id=0) }}">Monday</a>
+                {% else %}
+                    <a class="btn btn-outline-info" href="{{ url_for('meals.choose_meal', day='monday', meal_id=meal.id) }}">Monday</a>
+                {% endif %}
+                {% if current_user.tuesday == meal.id %}
+                    <a class="btn btn-info" href="{{ url_for('meals.choose_meal', day='tuesday', meal_id=0) }}">Tuesday</a>
+                {% else %}
+                    <a class="btn btn-outline-info" href="{{ url_for('meals.choose_meal', day='tuesday', meal_id=meal.id) }}">Tuesday</a>
+                {% endif %}
+                {% if current_user.wednesday == meal.id %}
+                    <a class="btn btn-info" href="{{ url_for('meals.choose_meal', day='wednesday', meal_id=0) }}">Wednesday</a>
+                {% else %}
+                    <a class="btn btn-outline-info" href="{{ url_for('meals.choose_meal', day='wednesday', meal_id=meal.id) }}">Wednesday</a>
+                {% endif %}
+                {% if current_user.thursday == meal.id %}
+                    <a class="btn btn-info" href="{{ url_for('meals.choose_meal', day='thursday', meal_id=0) }}">Thursday</a>
+                {% else %}
+                    <a class="btn btn-outline-info" href="{{ url_for('meals.choose_meal', day='thursday', meal_id=meal.id) }}">Thursday</a>
+                {% endif %}
+                {% if current_user.friday == meal.id %}
+                    <a class="btn btn-info" href="{{ url_for('meals.choose_meal', day='friday', meal_id=0) }}">Friday</a>
+                {% else %}
+                    <a class="btn btn-outline-info" href="{{ url_for('meals.choose_meal', day='friday', meal_id=meal.id) }}">Friday</a>
+                {% endif %}
+                {% if current_user.saturday == meal.id %}
+                    <a class="btn btn-info" href="{{ url_for('meals.choose_meal', day='saturday', meal_id=0) }}">Saturday</a>
+                {% else %}
+                    <a class="btn btn-outline-info" href="{{ url_for('meals.choose_meal', day='saturday', meal_id=meal.id) }}">Saturday</a>
+                {% endif %}
+                {% if current_user.sunday == meal.id %}
+                    <a class="btn btn-info" href="{{ url_for('meals.choose_meal', day='sunday', meal_id=0) }}">Sunday</a>
+                {% else %}
+                    <a class="btn btn-outline-info" href="{{ url_for('meals.choose_meal', day='sunday', meal_id=meal.id) }}">Sunday</a>
+                {% endif %}
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+                <span style="width: 90px;">Next week</span>
+                {% if current_user.monday2 == meal.id %}
+                    <a class="btn btn-secondary" href="{{ url_for('meals.choose_meal', day='monday2', meal_id=0) }}">Monday</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('meals.choose_meal', day='monday2', meal_id=meal.id) }}">Monday</a>
+                {% endif %}
+                {% if current_user.tuesday2 == meal.id %}
+                    <a class="btn btn-secondary" href="{{ url_for('meals.choose_meal', day='tuesday2', meal_id=0) }}">Tuesday</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('meals.choose_meal', day='tuesday2', meal_id=meal.id) }}">Tuesday</a>
+                {% endif %}
+                {% if current_user.wednesday2 == meal.id %}
+                    <a class="btn btn-secondary" href="{{ url_for('meals.choose_meal', day='wednesday2', meal_id=0) }}">Wednesday</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('meals.choose_meal', day='wednesday2', meal_id=meal.id) }}">Wednesday</a>
+                {% endif %}
+                {% if current_user.thursday2 == meal.id %}
+                    <a class="btn btn-secondary" href="{{ url_for('meals.choose_meal', day='thursday2', meal_id=0) }}">Thursday</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('meals.choose_meal', day='thursday2', meal_id=meal.id) }}">Thursday</a>
+                {% endif %}
+                {% if current_user.friday2 == meal.id %}
+                    <a class="btn btn-secondary" href="{{ url_for('meals.choose_meal', day='friday2', meal_id=0) }}">Friday</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('meals.choose_meal', day='friday2', meal_id=meal.id) }}">Friday</a>
+                {% endif %}
+                {% if current_user.saturday2 == meal.id %}
+                    <a class="btn btn-secondary" href="{{ url_for('meals.choose_meal', day='saturday2', meal_id=0) }}">Saturday</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('meals.choose_meal', day='saturday2', meal_id=meal.id) }}">Saturday</a>
+                {% endif %}
+                {% if current_user.sunday2 == meal.id %}
+                    <a class="btn btn-secondary" href="{{ url_for('meals.choose_meal', day='sunday2', meal_id=0) }}">Sunday</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('meals.choose_meal', day='sunday2', meal_id=meal.id) }}">Sunday</a>
+                {% endif %}
+            </div>
+
+            {% if meal.author == current_user or current_user.admin %}
+                <div>
+                    <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('meals.update_meal', meal_id=meal.id) }}">Update</a>
+                    <button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteModalLabel">Delete meal?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this meal?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="{{ url_for('meals.delete_meal', meal_id=meal.id) }}" method="POST">
+                        <input class="btn btn-danger" type="submit" value="Delete">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

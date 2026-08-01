@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2 class="mb-4">Search results for "{{ query }}"</h2>
+
+    {% if users %}
+        <h4>Users</h4>
+        <div class="row mb-4">
+            {% for u in users %}
+                <div class="col-md-3 mb-3">
+                    <a href="{{ url_for('users.account', user_id=u.id) }}" class="text-decoration-none">
+                        <div class="content-section text-center h-100">
+                            <img src="{{ url_for('static', filename='profile_pics/' + u.image_file) }}" width="60" height="60" class="rounded-circle mb-2">
+                            <p class="fw-bold mb-0">{{ u.username }}</p>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if meals %}
+        <h4>Meals</h4>
+        <div class="row">
+            {% for meal in meals %}
+                <div class="col-md-3 mb-3">
+                    <a href="{{ url_for('meals.meal', meal_id=meal.id) }}" class="text-decoration-none">
+                        <div class="content-section text-center h-100">
+                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                            <p class="mb-0">{{ meal.name }}</p>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not users and not meals and query %}
+        <p class="text-muted">No results found for "{{ query }}".</p>
+    {% endif %}
+{% endblock content %}

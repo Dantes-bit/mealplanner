@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+    <div class="media">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <label for="{{ form.picture.id }}" style="cursor: pointer;">
+                <img class="rounded-circle account-img ms-4" src="{{ image_file }}">
+                <br>
+                <div class="btn btn-outline-info">Change profile picture</div>
+            </label>
+            {{ form.picture(class="d-none", onchange="this.form.submit()") }}
+        </form>
+        <div class="text-end">
+            <button type="button" class="btn btn-danger text-end" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <img src="{{ url_for('static', filename='icons/trash.png') }}" width="25" height="25" class="rounded-circle">Delete Account
+            </button>
+        </div>
+        <div class="media-body">
+        <h2 class="account-heading">{{ user.username }}</h2>
+        {% if user.admin %}
+            <p class="fw-bold">Admin</p>
+        {% endif %}
+        <p class="text-secondary">{{ user.email }}</p>
+        </div>
+    </div>
+        <div>
+            <form method="POST" action="" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Account Info</legend>
+                        <div class="form-group">
+                            {{ form.username.label(class="form-control-label") }}
+                            {% if form.username.errors %}
+                                {{ form.username(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.username.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.username(class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            {{ form.bio.label(class="form-control-label") }}
+                            {% if form.bio.errors %}
+                                {{ form.bio(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.bio.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.bio(class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                        <br>                      
+                        <div class="form-check">
+                            {{ form.private(class="form-check-input") }}
+                            {{ form.private.label(class="form-check-label") }}
+                        </div>
+                    </fieldset>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-outline-info" onclick="subscribeToPush()">Enable notifications</button>
+                        <br>
+                        {{ form.submit(class="btn btn-outline-info") }}
+
+                        {% if current_user == user or current_user.admin %}
+                        {% endif %}
+                    </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

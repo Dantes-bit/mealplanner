@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Admin page</h1>
+    <div class="container media content-section">
+        <div class="row h-100">
+            <h1 class="fw-bold text-center">Users</h1>
+            <div class="col-md-2 mb-2 text-center">
+                <h2>ID</h2>
+                 {% for user in users %}
+                    <div class="admin-text">
+                        {{ user.id }}
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-2 mb-2 text-center">
+                <h2>Username</h2>
+                 {% for user in users %}
+                    <div class="admin-text">
+                        <a class="text-decoration-none admin-text" href="{{ url_for('users.account', user_id=user.id) }}">{{ user.username }}</a>
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-2 mb-2 text-center">
+                <h2>E-mail</h2>
+                 {% for user in users %}
+                    <div class="admin-text">
+                        {{ user.email }}
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-2 mb-2 text-center">
+                <h2>Admin</h2>
+                 {% for user in users %}
+                    {% if user.admin %}
+                        <div class="admin-text">Yes</div>
+                    {% else %}
+                        <div class="admin-text">No</div>
+                    {% endif %}
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-2 text-center">
+                <h2>Action</h2>
+                 {% for user in users %}
+                    <div class="admin-text">
+                        <a class="btn btn-outline-info btn-sm" href="{{ url_for('users.make_admin', user_id=user.id) }}" class="btn btn-primary">Make admin</a>
+                        <a class="btn btn-outline-danger btn-sm" href="{{ url_for('users.remove_admin', user_id=user.id) }}" class="btn btn-primary">Remove Admin</a>
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="container media content-section">
+        <div class="row h-100">
+            <h1 class="fw-bold text-center">Meals</h1>
+            <div class="col-md-2 mb-2 text-center">
+                <h2>ID</h2>
+                 {% for meal in meals %}
+                    <div class="admin-text">
+                        {{ meal.id }}
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-2 mb-2 text-center">
+                <h2>Name</h2>
+                 {% for meal in meals %}
+                    <div class="admin-text">
+                        <a class="text-decoration-none admin-text" href="{{ url_for('meals.meal', meal_id=meal.id) }}">{{ meal.name }}</a>
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-3 mb-2 text-center">
+                <h2></h2>
+                 {% for meal in meals %}
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-2 text-center">
+                <h2>Action</h2>
+                 {% for meal in meals %}
+                    <div class="admin-text">
+                        <a class="btn btn-outline-info btn-sm" href="{{ url_for('meals.update_meal', meal_id=meal.id) }}" class="btn btn-primary">Edit Meal</a>
+                        <a class="btn btn-outline-danger btn-sm" href="{{ url_for('meals.delete_meal', meal_id=meal.id) }}" class="btn btn-primary">Remove Meal</a>
+                        <a class="btn btn-outline-danger btn-sm" href="{{ url_for('meals.de_pic_meal', meal_id=meal.id) }}" class="btn btn-primary">Default Pic</a>
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="mb-4">
+        <a class="btn {{ 'btn-info' if filter_by == 'mine' else 'btn-outline-info' }}" href="{{ url_for('meals.recipes', filter='mine') }}">My recipes</a>
+        <a class="btn {{ 'btn-info' if filter_by == 'following' else 'btn-outline-info' }}" href="{{ url_for('meals.recipes', filter='following') }}">Following</a>
+        <a class="btn {{ 'btn-info' if filter_by == 'public' else 'btn-outline-info' }}" href="{{ url_for('meals.recipes', filter='public') }}">Public</a>
+    </div>
+
+    <div class="row">
+        {% for meal in meals.items %}
+            <div class="col-md-3 mb-3">
+                <article class="media content-section h-100 text-decoration-none">
+                    <div class="media-body text-decoration-none ">
+                        <div>
+                            <a href="{{ url_for('meals.meal', meal_id=meal.id) }}" class="text-decoration-none" style="color:black">
+                                <div class="text-center text-decoration-none ">
+                                    <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                    <p>{{ meal.name }}</p>
+                                    <p>ETA: {{ meal.time }}</p>
+                                    <br>
+                                    <div class="fw-bold content-section">
+                                        <img src="{{ url_for('static', filename='profile_pics/' + meal.author.image_file) }}" width="25" height="25" class="rounded-circle">{{ meal.author.username }}
+                                        <div class="text-secondary ms-3">
+                                            {{ meal.author.followers.count() }} followers
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if meals.pages > 1 %}
+        {% for page_num in meals.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if meals.page == page_num %}
+                    <a class="btn btn-info mb-4" href="{{ url_for('meals.recipes', filter=filter_by, page=page_num) }}">{{ page_num }}</a>
+                {% else %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for('meals.recipes', filter=filter_by, page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock content %}

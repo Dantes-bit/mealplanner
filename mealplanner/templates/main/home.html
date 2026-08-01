@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <div>
+            <article class="media">
+                <div>
+                    <div class="row">
+                        {% for day in days[:4] %}
+                            {% set meal = day_meals[day] %}
+                            <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="col-md-3 mb-3 text-decoration-none">
+                                <div class="calender-day text-center">
+                                    <div class="calender-header fw-bold">
+                                        {{ day | capitalize }}
+                                    </div>
+                                    <div class="calender-body">
+                                        {% if meal %}
+                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <p class="meal-text">{{ meal.name }}</p>
+                                            <p class="meal-text">ETA: {{ meal.time }}</p>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
+                                            <p class="nothing-text">Click to select a meal</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div>
+            <article class="media">
+                <div class="row">
+                    {% for day in days[4:] %}
+                        {% set meal = day_meals[day] %}
+                        <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="col-md-4 mb-4 text-decoration-none">
+                            <div class="calender-day text-center">
+                                <div class="calender-header fw-bold">
+                                    {{ day | capitalize }}
+                                </div>
+                                <div class="calender-body">
+                                        {% if meal %}
+                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <p class="meal-text">{{ meal.name }}</p>
+                                            <p class="meal-text">ETA: {{ meal.time }}</p>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
+                                            <p class="nothing-text">Click to select a meal</p>
+                                        {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+    <div class="row">
+        <div class="d-flex justify-content-center align-items-center">
+            <a class="nav-item nav-link fw-bold" href="{{ url_for('main.next_week') }}">
+                Next Week<img src="{{ url_for('static', filename='icons/next.png' ) }}" width="50" height="50" class="rounded-circle">
+            </a>
+        </div>
+    </div>
+    {% else %}
+        <h1>Log in bruh</h1>
+    {% endif %}
+{% endblock content %}

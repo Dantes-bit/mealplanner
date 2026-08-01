@@ -1,0 +1,155 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{{ legend }}</legend>
+                <div class="form-group">
+                    {{ form.name.label(class="form-control-label") }}
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.time.label(class="form-control-label") }}
+                    {% if form.time.errors %}
+                        {{ form.time(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.time.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.time(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label">Ingredients</label>
+
+                    <ul id="ingredient-list" class="list-unstyled">
+                        <!-- rader legges til her via JavaScript -->
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-2 mt-2">
+                        <input type="text" id="new-ingredient-name" class="form-control" placeholder="Ingredient name..." style="max-width: 200px;">
+                        <input type="text" id="new-ingredient-substitute" class="form-control" placeholder="Substitute (optional)" style="max-width: 200px;">
+                        <button type="button" class="btn btn-primary" onclick="addIngredientFromInputs()">Add</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.recipe.label(class="form-control-label") }}
+                    {% if form.recipe.errors %}
+                        {{ form.recipe(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.recipe.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.recipe(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.visibility.label(class="form-control-label") }}
+                    {{ form.visibility(class="form-select") }}
+                    {% if form.visibility.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.visibility.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <br>
+                <div class="form-group">
+                    {{ form.picture.label() }}
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <br>
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+    <script>
+        // @ts-nocheck
+        function addIngredientRow(name = '', essential = true, substitute = '') {
+            const ul = document.getElementById('ingredient-list');
+
+            const li = document.createElement('li');
+            li.className = 'd-flex align-items-center gap-2 mb-2';
+
+            const essentialClass = essential ? 'btn-outline-success' : 'btn-outline-secondary';
+            const essentialText = essential ? 'Essential' : 'Optional';
+
+                li.innerHTML = `
+                    <span class="ingredient-name" style="width: 150px; display: inline-block;">${name}</span>
+                    <span class="text-muted small substitute-label" style="width: 100px;">${substitute ? '(or ' + substitute + ')' : ''}</span>
+                    <button type="button" class="btn btn-sm ${essentialClass} essential-toggle" onclick="toggleEssential(this)">${essentialText}</button>
+                    <input type="hidden" name="ingredient_name[]" value="${name}">
+                    <input type="hidden" name="ingredient_essential[]" value="${essential ? '1' : '0'}">
+                    <input type="hidden" name="ingredient_substitute[]" value="${substitute}">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
+                        <img src="{{ url_for('static', filename='icons/trash.png') }}" width="25" height="25" class="rounded-circle">
+                    </button>
+                `;
+
+            ul.appendChild(li);
+        }
+
+        function addIngredientFromInputs() {
+            const nameInput = document.getElementById('new-ingredient-name');
+            const substituteInput = document.getElementById('new-ingredient-substitute');
+            const name = nameInput.value.trim();
+            if (name === '') return;
+
+            addIngredientRow(name, true, substituteInput.value.trim());
+
+            nameInput.value = '';
+            substituteInput.value = '';
+            nameInput.focus();
+        }
+
+        function toggleEssential(button) {
+            const li = button.closest('li');
+            const hiddenInput = li.querySelector('input[name="ingredient_essential[]"]');
+            const isEssential = hiddenInput.value === '1';
+
+            if (isEssential) {
+                hiddenInput.value = '0';
+                button.textContent = 'Optional';
+                button.classList.remove('btn-outline-success');
+                button.classList.add('btn-outline-secondary');
+            } else {
+                hiddenInput.value = '1';
+                button.textContent = 'Essential';
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-outline-success');
+            }
+        }
+
+        {% if meal %}
+            {% for ingredient in meal.ingredient_list %}
+                addIngredientRow(
+                    {{ ingredient.name | tojson }},
+                    {{ ingredient.essential | tojson }},
+                    {{ (ingredient.substitute or '') | tojson }}
+                );
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock content %}

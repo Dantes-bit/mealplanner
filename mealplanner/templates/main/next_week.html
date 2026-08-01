@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <div>
+            <article class="media">
+                <div>
+                    <div class="row">
+                        {% for day in days2[:4] %}
+                            {% set meal = day_meals[day] %}
+                            <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="col-md-3 mb-3 text-decoration-none">
+                                <div class="calender-day text-center">
+                                    <div class="calender-header fw-bold">
+                                        {% set display_name = day[:-1] %}
+                                        {{ display_name | capitalize }} 
+                                    </div>
+                                    <div class="calender-body">
+                                        {% if meal %}
+                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <p class="meal-text">{{ meal.name }}</p>
+                                            <p class="meal-text">ETA: {{ meal.time }}</p>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
+                                            <p class="nothing-text">Click to select a meal</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div>
+            <article class="media">
+                <div class="row">
+                    {% for day in days2[4:] %}
+                        {% set meal = day_meals[day] %}
+                        <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="col-md-4 mb-4 text-decoration-none">
+                            <div class="calender-day text-center">
+                                <div class="calender-header fw-bold">
+                                    {{ day | capitalize }}
+                                </div>
+                                <div class="calender-body">
+                                        {% if meal %}
+                                            <img src="{{ url_for('static', filename='meal_pics/' + meal.image_file) }}" width="125" height="125">
+                                            <p class="meal-text">{{ meal.name }}</p>
+                                            <p class="meal-text">ETA: {{ meal.time }}</p>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
+                                            <p class="nothing-text">Click to select a meal</p>
+                                        {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+    <div class="row">
+        <div class="d-flex justify-content-start align-items-center fw-bold">
+            <button type="button" class="btn btn-info ms-2 buttoncolor" data-bs-toggle="modal" data-bs-target="#transferModal">
+                Transfer mealplan to this week
+            </button>
+        </div>
+        <div class="d-flex justify-content-center align-items-center">
+            <a class="nav-item nav-link fw-bold" href="{{ url_for('main.home') }}">
+                <img src="{{ url_for('static', filename='icons/previous.png' ) }}" width="50" height="50" class="rounded-circle">This Week
+            </a>
+        </div>
+    </div>
+    <div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transferModalLabel">Transfer these meals to this week?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    This will replace all the current meals saved in this week, with the meals from next week. Are you sure?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('main.transfer_week') }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Transfer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+        <h1>Log in bruh</h1>
+    {% endif %}
+{% endblock content %}
