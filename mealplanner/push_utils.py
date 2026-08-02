@@ -2,7 +2,17 @@ from pywebpush import webpush, WebPushException
 from flask import current_app
 import json
 from datetime import date, timedelta
-from mealplanner.models import User, StorageItem, PushSubscription
+from mealplanner.models import StorageItem, PushSubscription
+import os
+import tempfile
+
+def get_vapid_key_path():
+    key_content = current_app.config['VAPID_PRIVATE_KEY']
+    path = os.path.join(tempfile.gettempdir(), 'vapid_private_key.pem')
+    if not os.path.exists(path):
+        with open(path, 'w') as f:
+            f.write(key_content)
+    return path
 
 def send_push_notification(subscription, title, body):
     try:
@@ -15,7 +25,7 @@ def send_push_notification(subscription, title, body):
                 }
             },
             data=json.dumps({"title": title, "body": body}),
-            vapid_private_key = current_app.config['VAPID_PRIVATE_KEY'],
+            vapid_private_key=get_vapid_key_path(),
             vapid_claims={"sub": current_app.config['VAPID_CLAIM_EMAIL']}
         )
     except WebPushException as e:
