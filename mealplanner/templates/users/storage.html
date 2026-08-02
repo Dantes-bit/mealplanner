@@ -6,41 +6,47 @@
         <ul id="storage-list">
             {% for item in items %}
                 <li class="d-flex align-items-center gap-2 mb-2">
-                    <span class="ingredient-name">{{ item }}</span>
-                    <input type="hidden" name="storage_name" value="{{ item }}">
+                    <span class="ingredient-name">{{ item.name }}</span>
+                    <span class="text-muted small">{{ 'exp: ' + item.expiration_date.strftime('%Y-%m-%d') if item.expiration_date else '' }}</span>
+                    <input type="hidden" name="storage_name" value="{{ item.name }}">
+                    <input type="hidden" name="storage_expiration" value="{{ item.expiration_date.strftime('%Y-%m-%d') if item.expiration_date else '' }}">
                     <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
-                        <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
+                        <i class="fas fa-trash"></i>
                     </button>
                 </li>
             {% endfor %}
         </ul>
-
         <div class="d-flex align-items-center gap-2 mt-3">
-            <input type="text" id="new-storage-input" class="form-control" placeholder="Add item..." style="max-width: 250px;" onkeypress="if(event.key==='Enter'){event.preventDefault(); addStorageItem();}">
+            <input type="text" id="new-storage-input" class="form-control" placeholder="Add item..." style="max-width: 200px;">
+            <input type="date" id="new-storage-expiration" class="form-control" style="max-width: 180px;">
             <button type="button" class="btn btn-primary" onclick="addStorageItem()">Add</button>
         </div>
-
         <button type="submit" class="btn btn-success mt-3">Save</button>
     </form>
-
     <script>
     function addStorageItem() {
         const input = document.getElementById('new-storage-input');
+        const expirationInput = document.getElementById('new-storage-expiration');
         const value = input.value.trim();
         if (value === '') return;
+
+        const expiration = expirationInput.value;
 
         const ul = document.getElementById('storage-list');
         const li = document.createElement('li');
         li.className = 'd-flex align-items-center gap-2 mb-2';
         li.innerHTML = `
             <span>${value}</span>
+            <span class="text-muted small">${expiration ? 'exp: ' + expiration : ''}</span>
             <input type="hidden" name="storage_name" value="${value}">
+            <input type="hidden" name="storage_expiration" value="${expiration}">
             <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
-                <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
+                <i class="fas fa-trash"></i>
             </button>
         `;
         ul.appendChild(li);
         input.value = '';
+        expirationInput.value = '';
         input.focus();
     }
     </script>
