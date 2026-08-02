@@ -38,7 +38,8 @@
                         <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="col-md-4 mb-4 text-decoration-none">
                             <div class="calender-day text-center">
                                 <div class="calender-header fw-bold">
-                                    {{ day | capitalize }}
+                                    {% set display_name = day[:-1] %}
+                                    {{ display_name | capitalize }}
                                 </div>
                                 <div class="calender-body">
                                         {% if meal %}
