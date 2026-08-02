@@ -6,7 +6,7 @@
         <ul id="storage-list">
             {% for item in items %}
                 <li class="d-flex align-items-center gap-2 mb-2">
-                    <span>{{ item }}</span>
+                    <span class="ingredient-name">{{ item }}</span>
                     <input type="hidden" name="storage_name" value="{{ item }}">
                     <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
                         <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
