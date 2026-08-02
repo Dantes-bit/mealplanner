@@ -393,3 +393,16 @@ def storage(username):
         return redirect(url_for('users.storage', username=user.username))
     items = StorageItem.query.filter_by(user_id=current_user.id).all()
     return render_template('users/storage.html', user=user, items=items)
+
+@users.route("/push/unsubscribe", methods=['POST'])
+@login_required
+def push_unsubscribe():
+    data = request.get_json()
+    endpoint = data.get('endpoint')
+
+    subscription = PushSubscription.query.filter_by(endpoint=endpoint, user_id=current_user.id).first()
+    if subscription:
+        db.session.delete(subscription)
+        db.session.commit()
+
+    return jsonify({'status': 'unsubscribed'})

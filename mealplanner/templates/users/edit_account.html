@@ -66,7 +66,10 @@
                         </div>
                     </fieldset>
                     <div class="form-group">
-                        <button type="button" class="btn btn-outline-info" onclick="subscribeToPush()">Enable notifications</button>
+                        <div class="mb-2">
+                            <span id="push-status" class="text-muted">Checking notification status...</span>
+                        </div>
+                        <button type="button" id="push-toggle-btn" class="btn btn-outline-info" onclick="togglePush()">Enable notifications</button>
                         <br>
                         {{ form.submit(class="btn btn-outline-info") }}
 
