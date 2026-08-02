@@ -57,6 +57,19 @@
                         {{ form.confirm_password(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+                <div class="form-check mb-3">
+                    {{ form.accept_terms(class="form-check-input") }}
+                    <label class="form-check-label" for="accept_terms">
+                        I have read and accept the <a href="{{ url_for('main.terms') }}" target="_blank">Terms of Service</a>
+                    </label>
+                    {% if form.accept_terms.errors %}
+                        <div class="text-danger small">
+                            {% for error in form.accept_terms.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}

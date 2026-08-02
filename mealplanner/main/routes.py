@@ -142,21 +142,6 @@ def service_worker():
     response.headers['Content-Type'] = 'application/javascript'
     return response
 
-@main.route("/test-push")
-@login_required
-def test_push():
-    subscriptions = PushSubscription.query.filter_by(user_id=current_user.id).all()
-
-    if not subscriptions:
-        return "Ingen push-subscription funnet for deg. Trykk 'Enable notifications' først."
-
-    for sub in subscriptions:
-        send_push_notification(sub, "Test varsel", "Dette er en test fra MealPlanner!")
-
-    return f"Sendte testvarsel til {len(subscriptions)} subscription(s)."
-
-@main.route("/debug-vapid")
-@login_required
-def debug_vapid():
-    key = current_app.config.get('VAPID_PRIVATE_KEY', 'IKKE SATT')
-    return f"<pre>Lengde: {len(key)}\n\nFørste 50 tegn: {repr(key[:50])}\n\nSiste 50 tegn: {repr(key[-50:])}\n\nAntall linjeskift: {key.count(chr(10))}</pre>"
+@main.route("/terms")
+def terms():
+    return render_template('main/terms.html', title='Terms of Service')

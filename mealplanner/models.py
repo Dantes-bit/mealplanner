@@ -2,7 +2,6 @@ from itsdangerous import URLSafeTimedSerializer as Serializer
 from mealplanner import db, login_manager
 from flask_login import UserMixin
 from flask import current_app
-from datetime import date
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -42,6 +41,7 @@ class User(db.Model, UserMixin):
     saturday2 = db.Column(db.Integer, default=0)
     sunday2 = db.Column(db.Integer, default=0)
     shopping_list = db.Column(db.Text, nullable=True)
+    terms_accepted_at = db.Column(db.DateTime, nullable=True)
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),

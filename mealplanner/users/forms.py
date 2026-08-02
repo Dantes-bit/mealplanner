@@ -6,14 +6,12 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from mealplanner.models import User
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username',
-                           validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Email',
-                        validators=[DataRequired(), Email()])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password= PasswordField('Confirm Password',
-                                    validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Sign Up!')
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    accept_terms = BooleanField('I have read and accept the Terms of Service', validators=[DataRequired(message="You must accept the Terms of Service to register.")])
+    submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
