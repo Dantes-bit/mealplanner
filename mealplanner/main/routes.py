@@ -154,3 +154,9 @@ def test_push():
         send_push_notification(sub, "Test varsel", "Dette er en test fra MealPlanner!")
 
     return f"Sendte testvarsel til {len(subscriptions)} subscription(s)."
+
+@main.route("/debug-vapid")
+@login_required
+def debug_vapid():
+    key = current_app.config.get('VAPID_PRIVATE_KEY', 'IKKE SATT')
+    return f"<pre>Lengde: {len(key)}\n\nFørste 50 tegn: {repr(key[:50])}\n\nSiste 50 tegn: {repr(key[-50:])}\n\nAntall linjeskift: {key.count(chr(10))}</pre>"
