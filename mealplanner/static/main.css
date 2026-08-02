@@ -123,3 +123,11 @@ a.article-title:hover {
 .buttoncolor {
   color: #ffffff;
 }
+.ingredient-names {
+  display: inline-block;
+  width: 200px;
+}
+.ingredient-expiration {
+  display: inline-block;
+  width: 100px;
+}
