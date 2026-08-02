@@ -1,4 +1,5 @@
-from flask import render_template, request, Blueprint, redirect, url_for, flash
+import os
+from flask import render_template, request, Blueprint, redirect, url_for, flash, send_from_directory, current_app
 from flask_login import current_user, login_required
 from mealplanner import db
 from mealplanner.models import Meal, User, Ingredient, StorageItem
@@ -128,3 +129,13 @@ def find_by_ingredients():
     exact_matches.sort(key=lambda x: (x['expiry'] is None, x['expiry'] or date.max, x['meal'].name.lower()))
     near_matches.sort(key=lambda x: (len(x['missing']), x['expiry'] is None, x['expiry'] or date.max, x['meal'].name.lower()))
     return render_template('main/find_by_ingredients.html', query=query, exact_matches=exact_matches, near_matches=near_matches, used_storage=used_storage, today=today)
+
+@main.route('/sw.js')
+def service_worker():
+    response = send_from_directory(
+        os.path.join(current_app.root_path, 'static'),
+        'sw.js'
+    )
+    response.headers['Service-Worker-Allowed'] = '/'
+    response.headers['Content-Type'] = 'application/javascript'
+    return response
