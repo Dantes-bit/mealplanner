@@ -12,6 +12,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="MealPlanner">
+    <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
     {% if title %}
         <title>MealPlanner - {{ title }}</title>
@@ -109,17 +110,26 @@
             return;
         }
 
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
+        try {
+            const registration = await Promise.race([
+                navigator.serviceWorker.ready,
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+            ]);
 
-        if (subscription && Notification.permission === 'granted') {
-            statusEl.textContent = 'Notifications are ON';
-            statusEl.className = 'text-success';
-            btnEl.textContent = 'Disable notifications';
-        } else {
-            statusEl.textContent = 'Notifications are OFF';
-            statusEl.className = 'text-muted';
-            btnEl.textContent = 'Enable notifications';
+            const subscription = await registration.pushManager.getSubscription();
+
+            if (subscription && Notification.permission === 'granted') {
+                statusEl.textContent = 'Notifications are ON';
+                statusEl.className = 'text-success';
+                btnEl.textContent = 'Disable notifications';
+            } else {
+                statusEl.textContent = 'Notifications are OFF';
+                statusEl.className = 'text-muted';
+                btnEl.textContent = 'Enable notifications';
+            }
+        } catch (err) {
+            console.error('Push status check failed:', err);
+            statusEl.textContent = 'Could not check notification status.';
         }
     }
 
