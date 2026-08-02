@@ -4,6 +4,8 @@ from flask_login import current_user, login_required
 from mealplanner import db
 from mealplanner.models import Meal, User, Ingredient, StorageItem
 from datetime import date
+from mealplanner.push_utils import send_push_notification
+from mealplanner.models import PushSubscription
 
 main = Blueprint('main', __name__)
 
@@ -139,3 +141,16 @@ def service_worker():
     response.headers['Service-Worker-Allowed'] = '/'
     response.headers['Content-Type'] = 'application/javascript'
     return response
+
+@main.route("/test-push")
+@login_required
+def test_push():
+    subscriptions = PushSubscription.query.filter_by(user_id=current_user.id).all()
+
+    if not subscriptions:
+        return "Ingen push-subscription funnet for deg. Trykk 'Enable notifications' først."
+
+    for sub in subscriptions:
+        send_push_notification(sub, "Test varsel", "Dette er en test fra MealPlanner!")
+
+    return f"Sendte testvarsel til {len(subscriptions)} subscription(s)."
