@@ -1,12 +1,21 @@
 const CACHE_NAME = 'mealplanner-v1';
 const urlsToCache = [
-    '/',
     '/static/main.css',
 ];
 
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+        caches.open(CACHE_NAME).then(cache => {
+            return Promise.all(
+                urlsToCache.map(url =>
+                    fetch(url).then(response => {
+                        if (response.ok) {
+                            return cache.put(url, response);
+                        }
+                    }).catch(() => {})
+                )
+            );
+        })
     );
 });
 
