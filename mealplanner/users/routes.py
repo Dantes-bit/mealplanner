@@ -386,7 +386,7 @@ def storage(username):
                 continue
             exp_date = None
             if expiration.strip():
-                exp_date = datetime.strptime(expiration.strip(), '%d-%m-%Y').date()
+                exp_date = datetime.strptime(expiration.strip(), '%Y-%m-%d').date()
             db.session.add(StorageItem(user_id=current_user.id, name=name, expiration_date=exp_date))
         db.session.commit()
         flash('Your storage has been updated!', 'success')
