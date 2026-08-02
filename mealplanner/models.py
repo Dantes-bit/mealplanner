@@ -2,6 +2,7 @@ from itsdangerous import URLSafeTimedSerializer as Serializer
 from mealplanner import db, login_manager
 from flask_login import UserMixin
 from flask import current_app
+from datetime import date
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -118,6 +119,8 @@ class StorageItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
+    expiration_date = db.Column(db.Date, nullable=True)
+
 
 class PushSubscription(db.Model):
     id = db.Column(db.Integer, primary_key=True)

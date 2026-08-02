@@ -8,6 +8,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from mealplanner.users.utils import save_picture, send_reset_email, send_shopping_email, send_change_email_request
 from collections import Counter
 import json
+from datetime import datetime
 
 users = Blueprint('users', __name__)
 
@@ -377,13 +378,18 @@ def storage(username):
         abort(403)
     if request.method == 'POST':
         names = request.form.getlist('storage_name')
+        expirations = request.form.getlist('storage_expiration')
         StorageItem.query.filter_by(user_id=current_user.id).delete()
-        for name in names:
+        for name, expiration in zip(names, expirations):
             name = name.strip()
-            if name:
-                db.session.add(StorageItem(user_id=current_user.id, name=name))
+            if not name:
+                continue
+            exp_date = None
+            if expiration.strip():
+                exp_date = datetime.strptime(expiration.strip(), '%Y-%m-%d').date()
+            db.session.add(StorageItem(user_id=current_user.id, name=name, expiration_date=exp_date))
         db.session.commit()
         flash('Your storage has been updated!', 'success')
         return redirect(url_for('users.storage', username=user.username))
     items = StorageItem.query.filter_by(user_id=current_user.id).all()
-    return render_template('users/storage.html', user=user, items=[i.name for i in items])
+    return render_template('users/storage.html', user=user, items=items)
