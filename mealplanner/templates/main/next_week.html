@@ -7,24 +7,31 @@
                     <div class="row">
                         {% for day in days2[:4] %}
                             {% set meal = day_meals[day] %}
-                            <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="col-md-3 mb-3 text-decoration-none">
-                                <div class="calender-day text-center">
-                                    <div class="calender-header fw-bold">
-                                        {% set display_name = day[:-1] %}
-                                        {{ display_name | capitalize }} 
-                                    </div>
-                                    <div class="calender-body">
-                                        {% if meal %}
-                                            <img src="{{ meal.image_file }}" width="125" height="125">
-                                            <p class="meal-text">{{ meal.name }}</p>
-                                            <p class="meal-text">ETA: {{ meal.time }}</p>
-                                        {% else %}
-                                            <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
-                                            <p class="nothing-text">Click to select a meal</p>
-                                        {% endif %}
-                                    </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="calender-day-wrapper">
+                                    <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="text-decoration-none">
+                                        <div class="calender-day text-center">
+                                            <div class="calender-header fw-bold">
+                                                {% set display_name = day[:-1] %}
+                                                {{ display_name | capitalize }}
+                                            </div>
+                                            <div class="calender-body">
+                                                {% if meal %}
+                                                    <img src="{{ meal.image_file }}" width="125" height="125">
+                                                    <p class="meal-text">{{ meal.name }}</p>
+                                                    <p class="meal-text">ETA: {{ meal.time }}</p>
+                                                {% else %}
+                                                    <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
+                                                    <p class="nothing-text">Click to select a meal</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </a>
+                                    {% if meal %}
+                                        <a href="{{ url_for('meals.choose_meal', day=day, meal_id=0) }}" class="calender-remove-btn">&times;</a>
+                                    {% endif %}
                                 </div>
-                            </a>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -35,24 +42,31 @@
                 <div class="row">
                     {% for day in days2[4:] %}
                         {% set meal = day_meals[day] %}
-                        <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="col-md-4 mb-4 text-decoration-none">
-                            <div class="calender-day text-center">
-                                <div class="calender-header fw-bold">
-                                    {% set display_name = day[:-1] %}
-                                    {{ display_name | capitalize }}
-                                </div>
-                                <div class="calender-body">
-                                        {% if meal %}
-                                            <img src="{{ meal.image_file }}" width="125" height="125">
-                                            <p class="meal-text">{{ meal.name }}</p>
-                                            <p class="meal-text">ETA: {{ meal.time }}</p>
-                                        {% else %}
-                                            <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
-                                            <p class="nothing-text">Click to select a meal</p>
-                                        {% endif %}
-                                </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="calender-day-wrapper">
+                                <a href="{{ url_for('meals.meal', meal_id=meal.id) if meal else url_for('meals.select_meal', day=day) }}" class="text-decoration-none">
+                                    <div class="calender-day text-center">
+                                        <div class="calender-header fw-bold">
+                                            {% set display_name = day[:-1] %}
+                                            {{ display_name | capitalize }}
+                                        </div>
+                                        <div class="calender-body">
+                                            {% if meal %}
+                                                <img src="{{ meal.image_file }}" width="125" height="125">
+                                                <p class="meal-text">{{ meal.name }}</p>
+                                                <p class="meal-text">ETA: {{ meal.time }}</p>
+                                            {% else %}
+                                                <img src="{{ url_for('static', filename='meal_pics/nomeal.png') }}" width="125" height="125">
+                                                <p class="nothing-text">Click to select a meal</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </a>
+                                {% if meal %}
+                                    <a href="{{ url_for('meals.choose_meal', day=day, meal_id=0) }}" class="calender-remove-btn">&times;</a>
+                                {% endif %}
                             </div>
-                        </a>
+                        </div>
                     {% endfor %}
                 </div>
             </article>

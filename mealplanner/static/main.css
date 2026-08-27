@@ -264,7 +264,7 @@ a.article-title:hover {
 .calender-remove-btn {
     position: absolute;
     top: 52px;
-    right: 10px;
+    right: 16px;
     width: 24px;
     height: 24px;
     background: rgba(0, 0, 0, 0.5);
