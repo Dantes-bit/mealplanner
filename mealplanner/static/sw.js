@@ -1,26 +1,14 @@
-const CACHE_NAME = 'mealplanner-v2';
-const urlsToCache = [
-    '/static/main.css',
-];
+const CACHE_NAME = 'mealplanner-v3';
+const urlsToCache = [];
 
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return Promise.all(
-                urlsToCache.map(url =>
-                    fetch(url).then(response => {
-                        if (response.ok) {
-                            return cache.put(url, response);
-                        }
-                    }).catch(() => {})
-                )
-            );
-        })
+        caches.open(CACHE_NAME)
     );
 });
 
 self.addEventListener('fetch', event => {
-    if (event.request.mode === 'navigate') {
+    if (event.request.mode === 'navigate' || event.request.destination === 'style' || event.request.destination === 'script') {
         event.respondWith(fetch(event.request));
         return;
     }
@@ -37,8 +25,7 @@ self.addEventListener('activate', event => {
         Promise.all([
             caches.keys().then(cacheNames => {
                 return Promise.all(
-                    cacheNames.filter(name => name !== CACHE_NAME)
-                        .map(name => caches.delete(name))
+                    cacheNames.map(name => caches.delete(name))
                 );
             }),
             self.clients.claim()
