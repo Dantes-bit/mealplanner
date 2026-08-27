@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mealplanner-v1';
+const CACHE_NAME = 'mealplanner-v2';
 const urlsToCache = [
     '/static/main.css',
 ];
@@ -20,6 +20,11 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+    if (event.request.mode === 'navigate') {
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request).then(response => {
             return response || fetch(event.request);
@@ -40,6 +45,7 @@ self.addEventListener('activate', event => {
         ])
     );
 });
+
 self.addEventListener('push', event => {
     const data = event.data ? event.data.json() : {};
     const title = data.title || 'MealPlanner';
