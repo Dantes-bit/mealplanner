@@ -41,6 +41,8 @@ class User(db.Model, UserMixin):
     saturday2 = db.Column(db.Integer, default=0)
     sunday2 = db.Column(db.Integer, default=0)
     shopping_list = db.Column(db.Text, nullable=True)
+    shopping_range_start = db.Column(db.Integer, nullable=False, default=0)
+    shopping_range_end = db.Column(db.Integer, nullable=False, default=6)
     terms_accepted_at = db.Column(db.DateTime, nullable=True)
     followed = db.relationship(
         'User', secondary=followers,
