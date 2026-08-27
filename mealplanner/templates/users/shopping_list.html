@@ -2,6 +2,21 @@
 {% block content %}
     <form id="ingredient-form" method="POST" action="{{ url_for('users.save_or_share') }}">
         <ul id="ingredient-list">
+            {% if suggestions %}
+                <div class="mb-4">
+                    <h5>Suggestions</h5>
+                    <ul id="suggestions-list" class="list-unstyled">
+                        {% for suggestion in suggestions %}
+                            <li class="d-flex align-items-center gap-2 mb-2" data-name="{{ suggestion }}">
+                                <span style="width: 200px;">{{ suggestion }}</span>
+                                <button type="button" class="btn btn-sm btn-outline-success suggestion-toggle" onclick="toggleSuggestion(this)">Add</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                </div>
+            {% endif %}
+            
             {% for item in ingredients %}
                 {% set parts = item.rsplit(' x', 1) %}
                 {% set base_name = parts[0] %}
@@ -102,6 +117,31 @@
         ul.appendChild(li);
         input.value = '';
         input.focus();
+    }
+
+    function toggleSuggestion(button) {
+        const li = button.closest('li');
+        const name = li.dataset.name;
+        const isAdded = button.textContent.trim() === 'Remove';
+
+        if (isAdded) {
+            const ul = document.getElementById('ingredient-list');
+            const items = ul.querySelectorAll('li');
+            for (const item of items) {
+                if (item.dataset.baseName === name) {
+                    item.remove();
+                    break;
+                }
+            }
+            button.textContent = 'Add';
+            button.classList.remove('btn-outline-danger');
+            button.classList.add('btn-outline-success');
+        } else {
+            addIngredientRow(name, 1, '');
+            button.textContent = 'Remove';
+            button.classList.remove('btn-outline-success');
+            button.classList.add('btn-outline-danger');
+        }
     }
     </script>
 {% endblock content %}

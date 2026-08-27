@@ -165,39 +165,48 @@ def reset_email(token, email):
     flash('Your email has been updated!', 'success')
     return redirect(url_for('users.account', user_id=user.id))
 
+WEEKDAYS_FULL = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+                  'monday2', 'tuesday2', 'wednesday2', 'thursday2', 'friday2', 'saturday2', 'sunday2']
+
 @users.route("/shopping_list/<username>")
 @login_required
 def shopping_list(username):
-    use_saved = request.args.get('use_saved', 'true') == 'true'
     user = User.query.filter_by(username=username).first_or_404()
     if user != current_user:
         abort(403)
-    meals = Meal.query.order_by(Meal.id.desc())
 
-    if use_saved:
-        if user.shopping_list:
-            ingredients = json.loads(user.shopping_list)
-        else:
-            ingredients = []
+    if user.shopping_list:
+        ingredients = json.loads(user.shopping_list)
     else:
-        weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-        selected_meal_ids = [getattr(user, day) for day in weekdays if getattr(user, day)]
-        storage_names = {i.name.strip().lower() for i in StorageItem.query.filter_by(user_id=user.id).all()}
         ingredients = []
-        for meal_id in selected_meal_ids:
-            meal = Meal.query.get(meal_id)
-            if meal:
-                for ingredient in meal.ingredient_list:
-                    if ingredient.name.strip().lower() not in storage_names:
-                        ingredients.append(ingredient.name.strip())
-    counted = Counter(ingredients)
-    clean_list = []
-    for item, count in counted.items():
-        if count > 1:
-            clean_list.append(f"{item} x{count}")
-        else:
-            clean_list.append(item)
-    return render_template('users/shopping_list.html', meals=meals, user=user, ingredients=clean_list)
+
+    existing_names = set()
+    for item in ingredients:
+        parts = item.rsplit(' x', 1)
+        base_name = parts[0] if len(parts) > 1 and parts[1].isdigit() else item
+        existing_names.add(base_name.strip().lower())
+
+    storage_names = {i.name.strip().lower() for i in StorageItem.query.filter_by(user_id=user.id).all()}
+
+    start = user.shopping_range_start
+    end = user.shopping_range_end
+    selected_days = WEEKDAYS_FULL[start:end + 1]
+    selected_meal_ids = [getattr(user, day) for day in selected_days if getattr(user, day)]
+
+    suggestions = []
+    seen = set()
+    for meal_id in selected_meal_ids:
+        meal = Meal.query.get(meal_id)
+        if not meal:
+            continue
+        for ingredient in meal.ingredient_list:
+            name_lower = ingredient.name.strip().lower()
+            if name_lower in storage_names or name_lower in existing_names or name_lower in seen:
+                continue
+            seen.add(name_lower)
+            suggestions.append(ingredient.name.strip())
+
+    return render_template('users/shopping_list.html', user=user, ingredients=ingredients, suggestions=suggestions)
 
 @users.route("/user/<int:user_id>/delete", methods=['POST'])
 @login_required
@@ -406,3 +415,23 @@ def push_unsubscribe():
         db.session.commit()
 
     return jsonify({'status': 'unsubscribed'})
+
+@users.route("/shopping_list/<username>/range", methods=['POST'])
+@login_required
+def update_shopping_range(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if user != current_user:
+        abort(403)
+
+    start = int(request.form.get('range_start', 0))
+    end = int(request.form.get('range_end', 6))
+
+    if start > end:
+        start, end = end, start
+
+    user.shopping_range_start = start
+    user.shopping_range_end = end
+    db.session.commit()
+
+    flash('Shopping list range updated!', 'success')
+    return redirect(url_for('users.shopping_list', username=user.username))

@@ -79,4 +79,23 @@
             </form>
         </div>
     </div>
+    <form method="POST" action="{{ url_for('users.update_shopping_range', username=user.username) }}">
+        <div class="form-group">
+            <label class="form-control-label">Shopping list range</label>
+            <div class="d-flex align-items-center gap-2">
+                <select name="range_start" class="form-select">
+                    {% for i, label in enumerate(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon (next)', 'Tue (next)', 'Wed (next)', 'Thu (next)', 'Fri (next)', 'Sat (next)', 'Sun (next)']) %}
+                        <option value="{{ i }}" {{ 'selected' if user.shopping_range_start == i else '' }}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <span>to</span>
+                <select name="range_end" class="form-select">
+                    {% for i, label in enumerate(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon (next)', 'Tue (next)', 'Wed (next)', 'Thu (next)', 'Fri (next)', 'Sat (next)', 'Sun (next)']) %}
+                        <option value="{{ i }}" {{ 'selected' if user.shopping_range_end == i else '' }}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-outline-info mt-2">Save range</button>
+    </form>
 {% endblock content %}
