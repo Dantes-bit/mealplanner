@@ -31,19 +31,25 @@ def send_push_notification(subscription, title, body):
     except WebPushException as e:
         print(f"Push failed: {e}")
 
-def notify_expiring_items(days_ahead=2):
-    target_date = date.today() + timedelta(days=days_ahead)
-
-    expiring_items = StorageItem.query.filter(
+def notify_items_for_date(target_date, message_prefix):
+    items = StorageItem.query.filter(
         StorageItem.expiration_date == target_date
     ).all()
 
     notified_users = {}
-    for item in expiring_items:
+    for item in items:
         notified_users.setdefault(item.user_id, []).append(item.name)
 
     for user_id, item_names in notified_users.items():
         subscriptions = PushSubscription.query.filter_by(user_id=user_id).all()
         names_text = ', '.join(item_names)
         for sub in subscriptions:
-            send_push_notification(sub, "MealPlanner", f"Expiring soon: {names_text}")
+            send_push_notification(sub, "MealPlanner", f"{message_prefix}: {names_text}")
+
+def notify_expiring_items(days_ahead=2):
+    target_date = date.today() + timedelta(days=days_ahead)
+    notify_items_for_date(target_date, "Expiring soon")
+
+def notify_expired_items():
+    today = date.today()
+    notify_items_for_date(today, "Expired today")

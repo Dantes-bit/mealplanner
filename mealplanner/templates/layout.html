@@ -69,11 +69,16 @@
     <!-- MINIMAL APP TOPPLINJE - kun synlig i standalone/PWA -->
     <header class="app-header">
         <span class="app-header-title">MealPlanner</span>
-        {% if current_user.is_authenticated %}
-            <a href="{{ url_for('main.search') }}" class="app-header-icon">
-                <img src="{{ url_for('static', filename='icons/search.png') }}" width="22" height="22">
-            </a>
-        {% endif %}
+        <div class="d-flex align-items-center gap-3">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.search') }}" class="app-header-icon">
+                    <img src="{{ url_for('static', filename='icons/search.png') }}" width="22" height="22">
+                </a>
+                <a href="{{ url_for('users.account', user_id=current_user.id) }}" class="app-header-icon">
+                    <img src="{{ current_user.image_file }}" width="26" height="26" class="rounded-circle">
+                </a>
+            {% endif %}
+        </div>
     </header>
 
     <main role="main" class="container">
@@ -111,10 +116,6 @@
             <a href="{{ url_for('users.shopping_list', username=current_user.username) }}" class="bottom-nav-item {{ 'active' if 'shopping_list' in request.path else '' }}">
                 <img src="{{ url_for('static', filename='icons/list.png') }}" width="26" height="26">
                 <span>Shopping List</span>
-            </a>
-            <a href="{{ url_for('users.account', user_id=current_user.id) }}" class="bottom-nav-item {{ 'active' if 'account' in request.path else '' }}">
-                <img src="{{ current_user.image_file }}" width="26" height="26" class="rounded-circle">
-                <span>Profile</span>
             </a>
         {% else %}
             <a href="{{ url_for('users.login') }}" class="bottom-nav-item">
