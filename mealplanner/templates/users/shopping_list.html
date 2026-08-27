@@ -43,9 +43,6 @@
         <div class="row ms-4">
             <div class="col-md-4">
                 <br>
-                <a href="{{ url_for('users.shopping_list', username=user.username, use_saved='false') }}" class="btn btn-primary">
-                   Reset shopping list
-                </a>
                 <button type="submit" name="action" value="save" class="btn btn-primary col-md-2">Save</button>
                 <button type="submit" name="action" value="share" class="btn btn-primary col-md-2">Email</button>
             </div>
@@ -137,7 +134,23 @@
             button.classList.remove('btn-outline-danger');
             button.classList.add('btn-outline-success');
         } else {
-            addIngredientRow(name, 1, '');
+            const ul = document.getElementById('ingredient-list');
+            const newLi = document.createElement('li');
+            newLi.className = 'ingredient-item d-flex align-items-center';
+            newLi.dataset.baseName = name;
+            newLi.dataset.quantity = '1';
+
+            newLi.innerHTML = `
+                <span class="ingredient-name">${name}</span>
+                <input type="hidden" name="ingredients" value="${name}">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="increaseQuantity(this)">+</button>
+                <button type="button" class="btn btn-sm btn-outline-danger decrease-btn d-none" onclick="decreaseQuantity(this)">-</button>
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeIngredient(this)">
+                    <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
+                </button>
+            `;
+
+            ul.appendChild(newLi);
             button.textContent = 'Remove';
             button.classList.remove('btn-outline-success');
             button.classList.add('btn-outline-danger');
