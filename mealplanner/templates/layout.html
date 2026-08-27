@@ -104,13 +104,13 @@
             <span>Recipes</span>
         </a>
         {% if current_user.is_authenticated %}
-            <a href="{{ url_for('meals.new_meal') }}" class="bottom-nav-item {{ 'active' if request.path == '/meal/new' else '' }}">
-                <img src="{{ url_for('static', filename='icons/add.png') }}" width="26" height="26">
-                <span>New</span>
+            <a href="{{ url_for('users.storage', username=current_user.username) }}" class="bottom-nav-item {{ 'active' if request.path == '/storage/' else '' }}">
+                <img src="{{ url_for('static', filename='icons/kitchen.png') }}" width="26" height="26">
+                <span>My Storage</span>
             </a>
             <a href="{{ url_for('users.shopping_list', username=current_user.username) }}" class="bottom-nav-item {{ 'active' if 'shopping_list' in request.path else '' }}">
                 <img src="{{ url_for('static', filename='icons/list.png') }}" width="26" height="26">
-                <span>List</span>
+                <span>Shopping List</span>
             </a>
             <a href="{{ url_for('users.account', user_id=current_user.id) }}" class="bottom-nav-item {{ 'active' if 'account' in request.path else '' }}">
                 <img src="{{ current_user.image_file }}" width="26" height="26" class="rounded-circle">
