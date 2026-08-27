@@ -210,5 +210,13 @@
 
         document.addEventListener('DOMContentLoaded', checkPushStatus);
     </script>
+    <div id="display-mode-debug" style="position: fixed; top: 100px; left: 10px; background: yellow; z-index: 9999; padding: 10px; font-size: 16px; color: black;">
+        Loading...
+    </div>
+    <script>
+        const debugEl = document.getElementById('display-mode-debug');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        debugEl.textContent = 'standalone: ' + isStandalone;
+    </script>
 </body>
 </html>
