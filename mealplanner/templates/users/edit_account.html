@@ -6,11 +6,12 @@
         <div class="settings-card text-center">
             <form method="POST" enctype="multipart/form-data">
                 {{ picture_form.hidden_tag() }}
+                <input type="hidden" name="form_name" value="picture">
                 <label for="{{ picture_form.picture.id }}" class="settings-avatar-label">
                     <img class="settings-avatar" src="{{ image_file }}" alt="{{ user.username }}">
                     <span class="settings-avatar-link">Change photo</span>
                 </label>
-                {{ picture_form.picture(class="d-none", onchange="this.form.submit()") }}
+                {{ picture_form.picture(class="d-none", accept="image/*", onchange="this.form.submit()") }}
                 {% for error in picture_form.picture.errors %}
                     <div class="text-danger small">{{ error }}</div>
                 {% endfor %}
@@ -19,6 +20,7 @@
 
         <form method="POST" action="" class="settings-card">
             {{ form.hidden_tag() }}
+            <input type="hidden" name="form_name" value="profile">
             <h2 class="settings-title">Profile</h2>
 
             <div class="mb-3">

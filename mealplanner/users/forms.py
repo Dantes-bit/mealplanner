@@ -31,7 +31,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class UpdatePictureForm(FlaskForm):
-    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png', 'webp', 'heic'])])
+    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Images only (jpg, png, webp).')])
     submit = SubmitField('Update Picture')
 
 class UpdateAccountForm(FlaskForm):

@@ -7,7 +7,7 @@ class PostForm(FlaskForm):
     name = StringField('Meal name', validators=[DataRequired()])
     time = StringField('ETA', validators=[DataRequired()])
     recipe = TextAreaField('Recipe', validators=[DataRequired()])
-    picture = FileField('Meal Picture', validators=[FileAllowed(['jpg', 'png', 'webp', 'heic'])])
+    picture = FileField('Meal Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Images only (jpg, png, webp).')])
     visibility = SelectField(
         'Visibility',
         choices=[

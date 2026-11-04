@@ -84,25 +84,34 @@ def edit_account(user_id):
         abort(403)
     form = UpdateAccountForm()
     picture_form = UpdatePictureForm()
-    if picture_form.validate_on_submit() and picture_form.picture.data:
-        picture_file = save_picture(picture_form.picture.data)
-        user.image_file = picture_file
-        db.session.commit()
-        flash('Your picture has been updated!', 'success')
-        return redirect(url_for('users.account', user_id=user.id))
-    if form.validate_on_submit():
-        user.username = form.username.data
-        user.bio = form.bio.data
-        user.private = form.private.data
-        db.session.commit()
-        flash('Your account has been updated!', 'success')
-        return redirect(url_for('users.account', user_id=user.id))
+    if request.method == 'POST':
+        which = request.form.get('form_name')
+        if which == 'picture':
+            if picture_form.validate_on_submit() and picture_form.picture.data:
+                try:
+                    user.image_file = save_picture(picture_form.picture.data)
+                    db.session.commit()
+                    flash('Your picture has been updated!', 'success')
+                except Exception:
+                    db.session.rollback()
+                    flash("Couldn't use that image. Try a jpg or png.", 'danger')
+            else:
+                for error in picture_form.picture.errors:
+                    flash(error, 'danger')
+            return redirect(url_for('users.edit_account', user_id=user.id))
+        if which == 'profile' and form.validate_on_submit():
+            user.username = form.username.data
+            user.bio = form.bio.data
+            user.private = form.private.data
+            db.session.commit()
+            flash('Your account has been updated!', 'success')
+            return redirect(url_for('users.account', user_id=user.id))
     elif request.method == 'GET':
         form.username.data = user.username
         form.bio.data = user.bio
         form.private.data = user.private
-    image_file = user.image_file
-    return render_template('users/edit_account.html', title='Account', image_file=image_file, form=form, picture_form=picture_form, user=user)
+    return render_template('users/edit_account.html', title='Edit profile', image_file=user.image_file,
+                           form=form, picture_form=picture_form, user=user)
 
 @users.route("/account/<int:user_id>/reset_email", methods=['GET', 'POST'])
 @login_required
