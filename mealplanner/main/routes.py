@@ -13,7 +13,8 @@ main = Blueprint('main', __name__)
 @main.route("/home")
 def home():
     if not current_user.is_authenticated:
-        return render_template('main/home.html')
+        featured = Meal.query.filter_by(visibility='public').order_by(Meal.id.desc()).limit(4).all()
+        return render_template('main/home.html', featured=featured)
     user = User.query.filter_by(username=current_user.username).first()
     days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
     day_meals = {}

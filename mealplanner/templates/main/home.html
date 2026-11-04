@@ -77,6 +77,68 @@
         </div>
     </div>
     {% else %}
-        <h1>Log in bruh</h1>
+        <section class="landing-hero">
+            <img src="{{ url_for('static', filename='icons/icon-512.png') }}">
+            <h1 class="landing-title">Plan your week. Shop smarter. Waste less.</h1>
+            <p class="landing-subtitle">
+                MealPlanner helps you decide what to cook, builds your shopping list for you,
+                and reminds you to use what you already have before it expires.
+            </p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <a class="btn btn-info btn-lg buttoncolor" href="{{ url_for('users.register') }}">Create free account</a>
+                <a class="btn btn-outline-secondary btn-lg" href="{{ url_for('users.login') }}">Log in</a>
+            </div>
+        </section>
+
+        <section class="landing-features">
+            <div class="landing-feature">
+                <h3>Plan your week</h3>
+                <p>Pick a meal for each day this week and next. Change your mind with one tap.</p>
+            </div>
+            <div class="landing-feature">
+                <h3>Get a shopping list</h3>
+                <p>Ingredients from your planned meals are suggested automatically, minus what you already have at home.</p>
+            </div>
+            <div class="landing-feature">
+                <h3>Waste less food</h3>
+                <p>Track what's in your kitchen and get a heads-up before it expires. See recipes that use it up.</p>
+            </div>
+            <div class="landing-feature">
+                <h3>Discover recipes</h3>
+                <p>Follow other people, browse their public recipes, and try something new.</p>
+            </div>
+        </section>
+
+        <section class="landing-steps">
+            <h2>How it works</h2>
+            <ol>
+                <li>Add a few recipes, or browse the public ones.</li>
+                <li>Pick a meal for each day on your weekly plan.</li>
+                <li>Open your shopping list and tick off what you need.</li>
+            </ol>
+        </section>
+
+        {% if featured %}
+            <section class="landing-recipes">
+                <h2>Fresh from the community</h2>
+                <div class="landing-recipe-grid">
+                    {% for meal in featured %}
+                        <div class="landing-recipe">
+                            <img src="{{ meal.image_file if meal.image_file.startswith('http') else url_for('static', filename='meal_pics/' + meal.image_file) }}" alt="{{ meal.name }}">
+                            <p class="meal-text">{{ meal.name }}</p>
+                            <p class="text-muted small mb-0">ETA: {{ meal.time }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="landing-hero">
+            <h2>Ready to plan your first week?</h2>
+            <a class="btn btn-info btn-lg buttoncolor mt-2" href="{{ url_for('users.register') }}">Get started</a>
+            <p class="text-muted small mt-3 mb-0">
+                By signing up you agree to our <a href="{{ url_for('main.terms') }}">Terms of Service</a>.
+            </p>
+        </section>
     {% endif %}
 {% endblock content %}

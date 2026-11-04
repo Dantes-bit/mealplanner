@@ -315,3 +315,87 @@ a.article-title:hover {
     background: rgba(200, 0, 0, 0.8);
     color: #ffffff;
 }
+
+.landing-hero {
+    text-align: center;
+    padding: 32px 8px;
+}
+
+.landing-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 12px;
+}
+
+.landing-subtitle {
+    max-width: 560px;
+    margin: 0 auto 24px auto;
+    color: #666666;
+    font-size: 1.1rem;
+}
+
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 16px 0 32px 0;
+}
+
+.landing-feature {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+}
+
+.landing-feature h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.landing-feature p {
+    margin: 0;
+    color: #666666;
+    font-size: 0.95rem;
+}
+
+.landing-steps {
+    max-width: 560px;
+    margin: 0 auto 32px auto;
+}
+
+.landing-steps ol {
+    padding-left: 20px;
+    color: #444444;
+}
+
+.landing-steps li {
+    margin-bottom: 8px;
+}
+
+.landing-recipes {
+    margin-bottom: 32px;
+}
+
+.landing-recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.landing-recipe {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 12px;
+    text-align: center;
+}
+
+.landing-recipe img {
+    width: 100%;
+    max-width: 125px;
+    height: 125px;
+    object-fit: cover;
+    border-radius: 8px;
+}
