@@ -442,3 +442,147 @@ a.article-title:hover {
 .app-header .dropdown-menu {
     z-index: 1100;
 }
+
+.profile-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.profile-stats {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.profile-stat strong {
+    display: block;
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.profile-stat span {
+    font-size: 0.8rem;
+    color: #888888;
+}
+
+.profile-info {
+    margin-top: 14px;
+}
+
+.profile-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-email {
+    margin: 2px 0 0 0;
+    font-size: 0.85rem;
+    color: #888888;
+}
+
+.profile-bio {
+    margin: 8px 0 0 0;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.profile-actions .btn {
+    flex: 1;
+}
+
+.profile-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888888;
+    margin: 8px 4px 12px 4px;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.profile-meal {
+    display: block;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    text-decoration: none;
+    color: #333333;
+}
+
+.profile-meal img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.profile-meal-name {
+    display: block;
+    padding: 8px 10px 0 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-meal-time {
+    display: block;
+    padding: 0 10px 10px 10px;
+    font-size: 0.8rem;
+    color: #888888;
+}
+
+.profile-delete-link {
+    font-size: 0.85rem;
+    color: #aa4444;
+}
+
+@media (min-width: 768px) {
+    .profile-avatar {
+        width: 110px;
+        height: 110px;
+    }
+
+    .profile-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .profile-actions .btn {
+        flex: 0 0 auto;
+    }
+}

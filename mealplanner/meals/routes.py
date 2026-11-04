@@ -66,8 +66,11 @@ def new_meal():
     return render_template('meals/create_meal.html', title='New Meal', form=form, legend='New Meal')
 
 @meals.route("/meal/<int:meal_id>")
+@login_required
 def meal(meal_id):
     meal = Meal.query.get_or_404(meal_id)
+    if not meal.can_be_viewed_by(current_user):
+        abort(404)
     return render_template('meals/meal.html', title=meal.name, meal=meal)
 
 @meals.route("/meal/<int:meal_id>/update", methods=['GET', 'POST'])
@@ -156,6 +159,8 @@ def choose_meal(day, meal_id):
             flash(f'Meal removed from {display_day}!', 'success')
         return redirect(url_for(target))
     meal = Meal.query.get_or_404(meal_id)
+    if not meal.can_be_viewed_by(current_user):
+        abort(404)
     setattr(current_user, day, meal_id)
     db.session.commit()
     flash(f'{meal.name} is selected for {display_day}!', 'success')

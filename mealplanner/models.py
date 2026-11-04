@@ -116,6 +116,16 @@ class Meal(db.Model):
     image_file = db.Column(db.String(255), nullable=False, default='https://res.cloudinary.com/xx1thsdq/image/upload/v1785588251/default_meal_phepg2.png')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     ingredient_list = db.relationship('Ingredient', backref='meal', lazy=True, cascade='all, delete-orphan')
+    def can_be_viewed_by(self, user):
+        if not user.is_authenticated:
+            return self.visibility == 'public'
+        if user.id == self.user_id or user.admin:
+            return True
+        if self.visibility == 'public':
+            return True
+        if self.visibility == 'followers':
+            return user.is_following(self.author)
+        return False
 
 class StorageItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)

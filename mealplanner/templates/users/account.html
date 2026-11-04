@@ -1,123 +1,113 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="content-section">
-        <div class="d-flex justify-content-between align-items-start">
-            <div class="d-flex">
-                <img class="rounded-circle account-img me-3" src="{{ image_file }}">
-                <div>
-                    <h2 class="account-heading">{{ user.username }}</h2>
-                    {% if user.admin %}
-                        <div class="fw-bold">
-                            <img src="{{ url_for('static', filename='icons/admin.png') }}" width="20" height="20" class="rounded-circle"> Admin
-                        </div>
-                    {% endif %}
-                    <div class="text-secondary">{{ user.email }}</div>
-
-                    <hr>
-
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <div class="fw-bold me-2">Followers: {{ user.followers.count() }}</div>
-
-                        {% if user == current_user %}
-                            {% set requests = current_user.pending_requests_received | list %}
-                            {% if requests %}
-                                {% if current_user.pending_requests_received.count() > 1 %}
-                                    <a class="btn btn-info" href="{{ url_for('users.follow_requests', user_id=user.id) }}">{{ current_user.pending_requests_received.count() }} new follow requests</a>
-                                {% else %}
-                                    <a class="btn btn-info" href="{{ url_for('users.follow_requests', user_id=user.id) }}">{{ current_user.pending_requests_received.count() }} new follow request</a>
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-
-                        {% if current_user != user %}
-                            {% if user.has_requested(current_user) %}
-                                <a class="btn btn-outline-success" href="{{ url_for('users.accept_follow_request', requester_id=user.id) }}">Accept follow request</a>
-                                <a class="btn btn-outline-danger" href="{{ url_for('users.decline_follow_request', requester_id=user.id) }}">Decline follow request</a>
-                            {% else %}
-                                {% if current_user.is_following(user) %}
-                                    <a class="btn btn-outline-danger" href="{{ url_for('users.unfollow', user_id=user.id) }}">Unfollow</a>
-                                {% else %}
-                                    {% if current_user.has_requested(user) %}
-                                        <a class="btn btn-outline-info" href="{{ url_for('users.cancel_follow_request', followed_id=user.id) }}">Cancel pending following request</a>
-                                    {% else %}
-                                        <a class="btn btn-outline-info" href="{{ url_for('users.follow', user_id=user.id) }}">Follow</a>
-                                    {% endif %}
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                    </div>
-
-                    <hr>
-
-                    {% if user.bio %}
-                        <p>{{ user.bio }}</p>
-                    {% endif %}
+    <div class="profile-card">
+        <div class="profile-top">
+            <img class="profile-avatar" src="{{ user.image_file }}" alt="{{ user.username }}">
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <strong>{{ user.followers.count() }}</strong>
+                    <span>Followers</span>
                 </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                {% if current_user.admin %}
-                    <a href="{{ url_for('users.admin') }}">
-                        <img src="{{ url_for('static', filename='icons/admin.png') }}" width="40" height="40" class="rounded-circle">
-                    </a>
-                {% endif %}
-                {% if current_user == user or current_user.admin %}
-                    <a href="{{ url_for('users.edit_account', user_id=user.id) }}">
-                        <img src="{{ url_for('static', filename='icons/settings.png') }}" width="40" height="40" class="rounded-circle">
-                    </a>
-                {% endif %}
+                <div class="profile-stat">
+                    <strong>{{ user.followed.count() }}</strong>
+                    <span>Following</span>
+                </div>
             </div>
         </div>
 
-        <div class="row mt-4">
+        <div class="profile-info">
+            <h1 class="profile-name">
+                {{ user.username }}
+                {% if user.admin %}
+                    <img src="{{ url_for('static', filename='icons/admin.png') }}" width="18" height="18" alt="Admin" title="Admin">
+                {% endif %}
+            </h1>
+            {% if current_user == user %}
+                <p class="profile-email">{{ user.email }}</p>
+            {% endif %}
+            {% if user.bio %}
+                <p class="profile-bio">{{ user.bio }}</p>
+            {% endif %}
+        </div>
+
+        <div class="profile-actions">
+            {% if current_user == user %}
+                <a class="btn btn-outline-secondary" href="{{ url_for('users.edit_account', user_id=user.id) }}">Edit profile</a>
+                {% if current_user.pending_requests_received.count() > 0 %}
+                    <a class="btn btn-info buttoncolor" href="{{ url_for('users.follow_requests', user_id=user.id) }}">
+                        Requests ({{ current_user.pending_requests_received.count() }})
+                    </a>
+                {% endif %}
+            {% else %}
+                {% if user.has_requested(current_user) %}
+                    <a class="btn btn-success" href="{{ url_for('users.accept_follow_request', requester_id=user.id) }}">Accept</a>
+                    <a class="btn btn-outline-danger" href="{{ url_for('users.decline_follow_request', requester_id=user.id) }}">Decline</a>
+                {% elif current_user.is_following(user) %}
+                    <a class="btn btn-outline-danger" href="{{ url_for('users.unfollow', user_id=user.id) }}">Unfollow</a>
+                {% elif current_user.has_requested(user) %}
+                    <a class="btn btn-outline-info" href="{{ url_for('users.cancel_follow_request', followed_id=user.id) }}">Requested</a>
+                {% else %}
+                    <a class="btn btn-info buttoncolor" href="{{ url_for('users.follow', user_id=user.id) }}">Follow</a>
+                {% endif %}
+            {% endif %}
+
+            {% if current_user.admin %}
+                <a class="btn btn-outline-secondary" href="{{ url_for('users.admin') }}">Admin</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <h2 class="profile-section-title">Recipes</h2>
+
+    {% if not can_view %}
+        <p class="text-center text-muted my-4">This account is private. Follow to see their recipes.</p>
+    {% elif not meals.items %}
+        <p class="text-center text-muted my-4">No recipes yet.</p>
+    {% else %}
+        <div class="profile-grid">
             {% for meal in meals.items %}
-                {% if meal.author == user %}
-                    <div class="col-md-4 mb-4">
-                        <article class="content-section h-100">
-                            <div>
-                                <a href="{{ url_for('meals.meal', meal_id=meal.id) }}">
-                                    <div class="text-center">
-                                        <img src="{{ meal.image_file }}" width="125" height="125">
-                                        <p>{{ meal.name }}</p>
-                                        <p>ETA: {{ meal.time }}</p>
-                                    </div>
-                                </a>
-                            </div>
-                        </article>
-                    </div>
+                <a href="{{ url_for('meals.meal', meal_id=meal.id) }}" class="profile-meal">
+                    <img src="{{ meal.image_file }}" alt="{{ meal.name }}">
+                    <span class="profile-meal-name">{{ meal.name }}</span>
+                    <span class="profile-meal-time">{{ meal.time }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if meals.pages > 1 %}
+        <div class="mt-3 mb-4">
+            {% for page_num in meals.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if meals.page == page_num %}
+                        <a class="btn btn-info mb-2" href="{{ url_for('users.account', user_id=user.id, page=page_num) }}">{{ page_num }}</a>
+                    {% else %}
+                        <a class="btn btn-outline-info mb-2" href="{{ url_for('users.account', user_id=user.id, page=page_num) }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    ...
                 {% endif %}
             {% endfor %}
         </div>
+    {% endif %}
 
-        {% if meals.pages > 1 %}
-            <div>
-                {% for page_num in meals.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-                    {% if page_num %}
-                        {% if meals.page == page_num %}
-                            <a class="btn btn-info mb-4" href="{{ url_for('users.account', user_id=user.id, page=page_num) }}">{{ page_num }}</a>
-                        {% else %}
-                            <a class="btn btn-outline-info mb-4" href="{{ url_for('users.account', user_id=user.id, page=page_num) }}">{{ page_num }}</a>
-                        {% endif %}
-                    {% else %}
-                        ...
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% if current_user == user %}
-            <a class="btn btn-outline-secondary" href="{{ url_for('users.logout') }}">Log out</a>
-        {% endif %}
+    {% if current_user == user or current_user.admin %}
+        <div class="text-center mt-4 mb-4">
+            <a href="#" class="profile-delete-link" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete account</a>
+        </div>
+
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteModalLabel">Delete Account?</h1>
+                        <h1 class="modal-title fs-5" id="deleteModalLabel">Delete account?</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete your account?</p>
+                        <p>This removes the account and its recipes. It can't be undone.</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form action="{{ url_for('users.delete_user', user_id=user.id) }}" method="POST">
                             <input class="btn btn-danger" type="submit" value="Delete">
                         </form>
@@ -125,5 +115,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock content %}

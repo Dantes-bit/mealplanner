@@ -55,25 +55,26 @@ def logout():
     logout_user()
     return redirect(url_for('main.home'))
 
-@users.route("/account/<int:user_id>", methods=['GET', 'POST'])
+@users.route("/account/<int:user_id>")
 @login_required
 def account(user_id):
     user = User.query.get_or_404(user_id)
-    form = UpdateAccountForm()
     page = request.args.get('page', 1, type=int)
-    if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            user.image_file = picture_file
-            db.session.commit()
-            flash('Your picture has been updated!', 'success')
-        return redirect(url_for('users.account', user_id=user.id))
-    image_file = user.image_file
-
-    meals = Meal.query.filter((Meal.visibility == 'public') | (Meal.visibility == 'followers')
-    ).order_by(Meal.id.desc()).paginate(per_page=9, page=page)
-
-    return render_template('users/account.html', title='Account', image_file=image_file, form=form, user=user, meals=meals)
+    is_owner = current_user.id == user.id
+    is_admin = current_user.admin
+    is_follower = current_user.is_following(user)
+    can_view = is_owner or is_admin or is_follower or not user.private
+    query = Meal.query.filter(Meal.user_id == user.id)
+    if is_owner or is_admin:
+        pass
+    elif is_follower:
+        query = query.filter(Meal.visibility.in_(['public', 'followers']))
+    else:
+        query = query.filter(Meal.visibility == 'public')
+    if not can_view:
+        query = query.filter(db.false())
+    meals = query.order_by(Meal.id.desc()).paginate(per_page=8, page=page)
+    return render_template('users/account.html', title=user.username, user=user, meals=meals, can_view=can_view)
 
 @users.route("/account/<int:user_id>/edit", methods=['GET', 'POST'])
 @login_required
