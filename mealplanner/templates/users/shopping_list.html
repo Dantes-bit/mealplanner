@@ -9,7 +9,7 @@
                         {% for suggestion in suggestions %}
                             <li class="d-flex align-items-center gap-2 mb-2" data-name="{{ suggestion }}">
                                 <span style="width: 200px;">{{ suggestion }}</span>
-                                <button type="button" class="btn btn-sm btn-outline-success" onclick="addSuggestion(this)">Add</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSuggestion(this)">Add</button>
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSuggestion(this)">Remove</button>
                             </li>
                         {% endfor %}
@@ -47,11 +47,28 @@
                 <br>
                 <button type="submit" name="action" value="save" class="btn btn-primary col-md-2">Save</button>
                 <button type="submit" name="action" value="share" class="btn btn-primary col-md-2">Email</button>
-                <button type="button" class="btn btn-outline-success" onclick="moveCheckedToStorage()">Move checked to storage</button>
+                <button type="button" class="btn btn-primary" onclick="moveCheckedToStorage()">Move checked to storage</button>
             </div>
         </div>
     </form>
-
+    <div class="modal fade" id="expiryModal" tabindex="-1" aria-labelledby="expiryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="expiryModalLabel">Expiration dates</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Optional. You can add dates later in Storage.</p>
+                    <div id="expiry-rows"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" onclick="confirmMove(false)">Add later</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmMove(true)">Save dates</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
     function increaseQuantity(button) {
         const li = button.closest('li');
@@ -147,20 +164,56 @@
         const li = button.closest('li');
         li.remove();
     }
-    async function moveCheckedToStorage() {
+    let pendingItems = [];
+
+    function moveCheckedToStorage() {
         const checked = document.querySelectorAll('#ingredient-list .bought-check:checked');
         if (checked.length === 0) return;
 
-        const names = Array.from(checked).map(c => c.closest('li').dataset.baseName);
+        pendingItems = Array.from(checked).map(c => c.closest('li'));
+
+        const rows = document.getElementById('expiry-rows');
+        rows.innerHTML = '';
+        pendingItems.forEach(li => {
+            const row = document.createElement('div');
+            row.className = 'd-flex align-items-center gap-2 mb-2';
+
+            const label = document.createElement('span');
+            label.className = 'flex-grow-1';
+            label.textContent = li.dataset.baseName;
+
+            const input = document.createElement('input');
+            input.type = 'date';
+            input.className = 'form-control expiry-input';
+            input.style.maxWidth = '170px';
+
+            row.appendChild(label);
+            row.appendChild(input);
+            rows.appendChild(row);
+        });
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('expiryModal')).show();
+    }
+
+    async function confirmMove(useDates) {
+        const inputs = document.querySelectorAll('#expiry-rows .expiry-input');
+        const items = pendingItems.map((li, i) => ({
+            name: li.dataset.baseName,
+            expiration: useDates ? inputs[i].value : ''
+        }));
 
         const res = await fetch("{{ url_for('users.mark_bought') }}", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ names: names })
+            body: JSON.stringify({ items: items })
         });
 
         if (res.ok) {
-            checked.forEach(c => c.closest('li').remove());
+            pendingItems.forEach(li => li.remove());
+            pendingItems = [];
+            bootstrap.Modal.getInstance(document.getElementById('expiryModal')).hide();
+        } else {
+            alert('Could not move the items. Try again.');
         }
     }
     </script>

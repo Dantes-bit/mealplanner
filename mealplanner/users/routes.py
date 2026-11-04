@@ -401,7 +401,9 @@ def storage(username):
         db.session.commit()
         flash('Your storage has been updated!', 'success')
         return redirect(url_for('users.storage', username=user.username))
-    items = StorageItem.query.filter_by(user_id=current_user.id).all()
+    items = StorageItem.query.filter_by(user_id=current_user.id).order_by(
+        StorageItem.expiration_date.asc().nullslast(), StorageItem.name
+    ).all()
     return render_template('users/storage.html', user=user, items=items)
 
 @users.route("/push/unsubscribe", methods=['POST'])
@@ -441,23 +443,46 @@ def update_shopping_range(username):
 @login_required
 def mark_bought():
     data = request.get_json() or {}
-    names = [' '.join(n.split()) for n in data.get('names', []) if n and n.strip()]
-    names = [n[:1].upper() + n[1:] for n in names]
+    items = data.get('items', [])
 
-    existing = {i.name.strip().lower() for i in StorageItem.query.filter_by(user_id=current_user.id).all()}
-    for name in names:
-        if name.lower() not in existing:
-            db.session.add(StorageItem(user_id=current_user.id, name=name))
-            existing.add(name.lower())
+    existing = {i.name.strip().lower(): i for i in StorageItem.query.filter_by(user_id=current_user.id).all()}
+    bought_names = set()
+
+    for entry in items:
+        if not isinstance(entry, dict):
+            continue
+
+        name = ' '.join(str(entry.get('name', '')).split())
+        name = name[:1].upper() + name[1:]
+        if not name:
+            continue
+
+        exp_date = None
+        raw = str(entry.get('expiration') or '').strip()
+        if raw:
+            try:
+                exp_date = datetime.strptime(raw, '%Y-%m-%d').date()
+            except ValueError:
+                exp_date = None
+
+        key = name.lower()
+        bought_names.add(key)
+
+        if key in existing:
+            if exp_date:
+                existing[key].expiration_date = exp_date
+        else:
+            item = StorageItem(user_id=current_user.id, name=name, expiration_date=exp_date)
+            db.session.add(item)
+            existing[key] = item
 
     if current_user.shopping_list:
         def base_name(item):
             parts = item.rsplit(' x', 1)
             return (parts[0] if len(parts) > 1 and parts[1].isdigit() else item).strip().lower()
 
-        bought = {n.lower() for n in names}
         saved = json.loads(current_user.shopping_list)
-        current_user.shopping_list = json.dumps([i for i in saved if base_name(i) not in bought])
+        current_user.shopping_list = json.dumps([i for i in saved if base_name(i) not in bought_names])
 
     db.session.commit()
     return jsonify({'status': 'ok'})

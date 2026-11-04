@@ -5,6 +5,7 @@ from mealplanner.meals.forms import PostForm
 from mealplanner.models import Meal, Ingredient
 from flask_login import current_user, login_required
 from mealplanner.meals.utils import save_meal_picture
+from markupsafe import Markup
 
 meals = Blueprint('meals', __name__)
 
@@ -130,24 +131,35 @@ def select_meal(day):
 
     return render_template('meals/select_meal.html', title='Select Meal', meals=meals, see_all=see_all, day=day)
 
+VALID_DAYS = {
+    'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+    'monday2', 'tuesday2', 'wednesday2', 'thursday2', 'friday2', 'saturday2', 'sunday2',
+}
+
 @meals.route("/meal/<day>/<int:meal_id>", methods=['POST', 'GET'])
 @login_required
 def choose_meal(day, meal_id):
+    day = day.lower()
+    if day not in VALID_DAYS:
+        abort(404)
+    display_day = day[:-1] if day[-1].isdigit() else day
+    display_day = display_day.capitalize()
+    target = 'main.next_week' if day.endswith('2') else 'main.home'
     if meal_id == 0:
-        setattr(current_user, day.lower(), 0)
+        setattr(current_user, day, 0)
         db.session.commit()
-        display_day = day[:-1]
-        flash(f'Meal removed from {display_day}!', 'success')
-        return redirect(url_for('main.home'))
+        undo_id = request.args.get('undo', type=int)
+        if undo_id:
+            undo_url = url_for('meals.choose_meal', day=day, meal_id=undo_id)
+            flash(Markup(f'Meal removed from {display_day}. <a href="{undo_url}">Undo</a>'), 'info')
+        else:
+            flash(f'Meal removed from {display_day}!', 'success')
+        return redirect(url_for(target))
     meal = Meal.query.get_or_404(meal_id)
-    if meal:
-        setattr(current_user, day.lower(), meal_id)
-        db.session.commit()
-        display_day = day
-        if display_day and display_day[-1].isdigit():
-            display_day = day[:-1]
-        flash(f'{meal.name} is selected for {display_day}!', 'success')
-        return redirect(url_for('main.home'))
+    setattr(current_user, day, meal_id)
+    db.session.commit()
+    flash(f'{meal.name} is selected for {display_day}!', 'success')
+    return redirect(url_for(target))
 
 @meals.route("/meal/<int:meal_id>/default_pic", methods=['GET', 'POST'])
 @login_required

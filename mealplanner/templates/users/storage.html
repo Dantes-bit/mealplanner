@@ -6,10 +6,10 @@
         <ul id="storage-list">
             {% for item in items %}
                 <li class="d-flex align-items-center gap-2 mb-2">
-                    <span class="ingredient-names">{{ item.name }}</span>
-                    <span class="text-muted small ingredient-expiration">{{ 'exp: ' + item.expiration_date.strftime('%Y-%m-%d') if item.expiration_date else '' }}</span>
+                    <span style="width: 200px;">{{ item.name }}</span>
                     <input type="hidden" name="storage_name" value="{{ item.name }}">
-                    <input type="hidden" name="storage_expiration" value="{{ item.expiration_date.strftime('%Y-%m-%d') if item.expiration_date else '' }}">
+                    <input type="date" name="storage_expiration" class="form-control form-control-sm" style="max-width: 160px;"
+                        value="{{ item.expiration_date.strftime('%Y-%m-%d') if item.expiration_date else '' }}">
                     <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
                         <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">
                     </button>
@@ -21,30 +21,44 @@
             <input type="date" id="new-storage-expiration" class="form-control" style="max-width: 180px;">
             <button type="button" class="btn btn-primary" onclick="addStorageItem()">Add</button>
         </div>
-        <button type="submit" class="btn btn-success mt-3">Save</button>
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
     </form>
     <script>
+    const TRASH_ICON = "{{ url_for('static', filename='icons/trash.png') }}";
     function addStorageItem() {
         const input = document.getElementById('new-storage-input');
         const expirationInput = document.getElementById('new-storage-expiration');
         const value = input.value.trim();
         if (value === '') return;
 
-        const expiration = expirationInput.value;
-
-        const ul = document.getElementById('storage-list');
         const li = document.createElement('li');
         li.className = 'd-flex align-items-center gap-2 mb-2';
-        li.innerHTML = `
-            <span class="ingredient-names">${value}</span>
-            <span class="text-muted small ingredient-expiration">${expiration ? 'exp: ' + expiration : ''}</span>
-            <input type="hidden" name="storage_name" value="${value}">
-            <input type="hidden" name="storage_expiration" value="${expiration}">
-            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">
-                <img src="{{ url_for('static', filename='icons/trash.png') }}" width="20" height="20" class="rounded-circle">   
-            </button>
-        `;
-        ul.appendChild(li);
+
+        const label = document.createElement('span');
+        label.style.width = '200px';
+        label.textContent = value;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'hidden';
+        nameInput.name = 'storage_name';
+        nameInput.value = value;
+
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.name = 'storage_expiration';
+        dateInput.className = 'form-control form-control-sm';
+        dateInput.style.maxWidth = '160px';
+        dateInput.value = expirationInput.value;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-sm btn-danger';
+        removeBtn.innerHTML = `<img src="${TRASH_ICON}" width="20" height="20" class="rounded-circle">`;
+        removeBtn.onclick = () => li.remove();
+
+        li.append(label, nameInput, dateInput, removeBtn);
+        document.getElementById('storage-list').appendChild(li);
+
         input.value = '';
         expirationInput.value = '';
         input.focus();
