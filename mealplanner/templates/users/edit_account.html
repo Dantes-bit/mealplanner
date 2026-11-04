@@ -1,101 +1,131 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="content-section">
-    <div class="media">
-        <form method="POST" enctype="multipart/form-data">
-            {{ picture_form.hidden_tag() }}
-            <label for="{{ picture_form.picture.id }}" style="cursor: pointer;">
-                <img class="rounded-circle account-img ms-3" src="{{ image_file }}">
-                <div>
-                    <button type="button" class="btn btn-outline-info">
-                        Change profile pic
-                    </button>
-                </div>
-            </label>
-            {{ picture_form.picture(class="d-none", onchange="this.form.submit()") }}
-        </form>
-        <div class="text-end">
-            <button type="button" class="btn btn-danger text-end" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                <img src="{{ url_for('static', filename='icons/trash.png') }}" width="25" height="25" class="rounded-circle">Delete Account
-            </button>
-        </div>
-        <div class="media-body">
-        <h2 class="account-heading">{{ user.username }}</h2>
-        {% if user.admin %}
-            <p class="fw-bold">Admin</p>
-        {% endif %}
-        <p class="text-secondary">{{ user.email }}</p>
-        </div>
-    </div>
-        <div>
-            <form method="POST" action="" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                    <fieldset class="form-group">
-                        <legend class="border-bottom mb-4">Account Info</legend>
-                        <div class="form-group">
-                            {{ form.username.label(class="form-control-label") }}
-                            {% if form.username.errors %}
-                                {{ form.username(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.username.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.username(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                        <br>
-                        <div class="form-group">
-                            {{ form.bio.label(class="form-control-label") }}
-                            {% if form.bio.errors %}
-                                {{ form.bio(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.bio.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.bio(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                        <br>                      
-                        <div class="form-check">
-                            {{ form.private(class="form-check-input") }}
-                            {{ form.private.label(class="form-check-label") }}
-                        </div>
-                    </fieldset>
-                    <div class="form-group">
-                        <div class="mb-2">
-                            <span id="push-status" class="text-muted">Checking notification status...</span>
-                        </div>
-                        <button type="button" id="push-toggle-btn" class="btn btn-outline-info" onclick="togglePush()">Enable notifications</button>
-                        <br>
-                        {{ form.submit(class="btn btn-outline-info") }}
+    <div class="settings-page">
+        <h1 class="settings-heading">Edit profile</h1>
 
-                        {% if current_user == user or current_user.admin %}
-                        {% endif %}
-                    </div>
+        <div class="settings-card text-center">
+            <form method="POST" enctype="multipart/form-data">
+                {{ picture_form.hidden_tag() }}
+                <label for="{{ picture_form.picture.id }}" class="settings-avatar-label">
+                    <img class="settings-avatar" src="{{ image_file }}" alt="{{ user.username }}">
+                    <span class="settings-avatar-link">Change photo</span>
+                </label>
+                {{ picture_form.picture(class="d-none", onchange="this.form.submit()") }}
+                {% for error in picture_form.picture.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
             </form>
         </div>
-    </div>
-    <form method="POST" action="{{ url_for('users.update_shopping_range', username=user.username) }}">
-        <div class="form-group">
-            <label class="form-control-label">Shopping list range</label>
-            <div class="d-flex align-items-center gap-2">
-                <select name="range_start" class="form-select">
+
+        <form method="POST" action="" class="settings-card">
+            {{ form.hidden_tag() }}
+            <h2 class="settings-title">Profile</h2>
+
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {% if form.username.errors %}
+                    {{ form.username(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.username.errors %}<span>{{ error }}</span>{% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.username(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.bio.label(class="form-label") }}
+                {% if form.bio.errors %}
+                    {{ form.bio(class="form-control is-invalid", rows=4) }}
+                    <div class="invalid-feedback">
+                        {% for error in form.bio.errors %}<span>{{ error }}</span>{% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.bio(class="form-control", rows=4) }}
+                {% endif %}
+            </div>
+
+            <div class="settings-row">
+                <div>
+                    <div class="settings-row-title">Private account</div>
+                    <div class="settings-row-hint">Only people you approve can follow you.</div>
+                </div>
+                <div class="form-check form-switch m-0">
+                    {{ form.private(class="form-check-input") }}
+                </div>
+            </div>
+
+            {{ form.submit(class="btn btn-info buttoncolor w-100 mt-3") }}
+        </form>
+
+        <div class="settings-card">
+            <h2 class="settings-title">Notifications</h2>
+            <div class="settings-row">
+                <div>
+                    <div class="settings-row-title">Expiry reminders</div>
+                    <div id="push-status" class="settings-row-hint">Checking notification status...</div>
+                </div>
+                <button type="button" id="push-toggle-btn" class="btn btn-outline-info btn-sm" onclick="togglePush()">Enable notifications</button>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('users.update_shopping_range', username=user.username) }}" class="settings-card">
+            <h2 class="settings-title">Shopping list</h2>
+            <p class="settings-row-hint mb-2">Suggestions are based on the meals planned in this range.</p>
+            <div class="settings-range">
+                <select name="range_start" class="form-select" aria-label="From day">
                     {% for label in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon (next)', 'Tue (next)', 'Wed (next)', 'Thu (next)', 'Fri (next)', 'Sat (next)', 'Sun (next)'] %}
                         <option value="{{ loop.index0 }}" {{ 'selected' if user.shopping_range_start == loop.index0 else '' }}>{{ label }}</option>
                     {% endfor %}
                 </select>
                 <span>to</span>
-                <select name="range_end" class="form-select">
+                <select name="range_end" class="form-select" aria-label="To day">
                     {% for label in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon (next)', 'Tue (next)', 'Wed (next)', 'Thu (next)', 'Fri (next)', 'Sat (next)', 'Sun (next)'] %}
                         <option value="{{ loop.index0 }}" {{ 'selected' if user.shopping_range_end == loop.index0 else '' }}>{{ label }}</option>
                     {% endfor %}
                 </select>
             </div>
+            <button type="submit" class="btn btn-outline-info w-100 mt-3">Save range</button>
+        </form>
+
+        <div class="settings-card">
+            <h2 class="settings-title">Account</h2>
+            <a class="settings-link" href="{{ url_for('users.change_email', user_id=user.id) }}">
+                <span>Change email</span><span aria-hidden="true">&rsaquo;</span>
+            </a>
+            <a class="settings-link" href="{{ url_for('users.follow_requests', user_id=user.id) }}">
+                <span>Follow requests</span><span aria-hidden="true">&rsaquo;</span>
+            </a>
+            <a class="settings-link" href="{{ url_for('users.account', user_id=user.id) }}">
+                <span>Back to profile</span><span aria-hidden="true">&rsaquo;</span>
+            </a>
+            {% if current_user == user or current_user.admin %}
+                <a href="#" class="settings-link settings-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <span>Delete account</span><span aria-hidden="true">&rsaquo;</span>
+                </a>
+            {% endif %}
         </div>
-        <button type="submit" class="btn btn-outline-info mt-2">Save range</button>
-    </form>
+    </div>
+
+    {% if current_user == user or current_user.admin %}
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="deleteModalLabel">Delete account?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0">This removes the account and its recipes. It can't be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form action="{{ url_for('users.delete_user', user_id=user.id) }}" method="POST">
+                            <input class="btn btn-danger" type="submit" value="Delete">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock content %}

@@ -80,6 +80,8 @@ def account(user_id):
 @login_required
 def edit_account(user_id):
     user = User.query.get_or_404(user_id)
+    if current_user.id != user.id and not current_user.admin:
+        abort(403)
     form = UpdateAccountForm()
     picture_form = UpdatePictureForm()
     if picture_form.validate_on_submit() and picture_form.picture.data:
@@ -106,6 +108,8 @@ def edit_account(user_id):
 @login_required
 def change_email(user_id):
     user = User.query.get_or_404(user_id)
+    if current_user.id != user.id and not current_user.admin:
+        abort(403)
     form = ChangeEmailForm()
     if form.validate_on_submit():
         send_change_email_request(user, form.email.data)
@@ -359,6 +363,8 @@ def followers(user_id):
 @login_required
 def follow_requests(user_id):
     user = User.query.get_or_404(user_id)
+    if current_user.id != user.id and not current_user.admin:
+        abort(403)
     return render_template('users/follow_requests.html', title='Follow requests', user=user)
 
 @users.route("/push/subscribe", methods=['POST'])
