@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request, abort, Blueprint, jsonify
+from flask import render_template, url_for, flash, redirect, request, abort, Blueprint, jsonify, current_app
 from mealplanner import db, bcrypt
 from mealplanner.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                 RequestResetForm, ResetPasswordForm, ChangeEmailForm,
@@ -87,17 +87,22 @@ def edit_account(user_id):
     if request.method == 'POST':
         which = request.form.get('form_name')
         if which == 'picture':
-            if picture_form.validate_on_submit() and picture_form.picture.data:
-                try:
-                    user.image_file = save_picture(picture_form.picture.data)
-                    db.session.commit()
-                    flash('Your picture has been updated!', 'success')
-                except Exception:
-                    db.session.rollback()
-                    flash("Couldn't use that image. Try a jpg or png.", 'danger')
+            if picture_form.validate_on_submit():
+                if picture_form.picture.data and picture_form.picture.data.filename:
+                    try:
+                        user.image_file = save_picture(picture_form.picture.data)
+                        db.session.commit()
+                        flash('Your picture has been updated!', 'success')
+                    except Exception as e:
+                        db.session.rollback()
+                        current_app.logger.exception('save_picture failed')
+                        flash(f"Couldn't use that image: {type(e).__name__}", 'danger')
+                else:
+                    flash('No image was received. Try choosing it again.', 'danger')
             else:
-                for error in picture_form.picture.errors:
-                    flash(error, 'danger')
+                for field, errors in picture_form.errors.items():
+                    for error in errors:
+                        flash(f'{field}: {error}', 'danger')
             return redirect(url_for('users.edit_account', user_id=user.id))
         if which == 'profile' and form.validate_on_submit():
             user.username = form.username.data
