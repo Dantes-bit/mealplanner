@@ -74,9 +74,20 @@
                 <a href="{{ url_for('main.search') }}" class="app-header-icon">
                     <img src="{{ url_for('static', filename='icons/search.png') }}" width="22" height="22">
                 </a>
-                <a href="{{ url_for('users.account', user_id=current_user.id) }}" class="app-header-icon">
-                    <img src="{{ current_user.image_file }}" width="26" height="26" class="rounded-circle">
-                </a>
+                <div class="dropdown">
+                    <a href="#" class="app-header-icon" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu">
+                        <img src="{{ current_user.image_file }}" width="26" height="26" class="rounded-circle">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ url_for('users.account', user_id=current_user.id) }}">Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.find_by_ingredients') }}">What can I make?</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('users.edit_account', user_id=current_user.id) }}">Edit profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('users.change_email', user_id=current_user.id) }}">Change email</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('users.follow_requests', user_id=current_user.id) }}">Follow requests</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('users.logout') }}">Log out</a></li>
+                    </ul>
+                </div>
             {% endif %}
         </div>
     </header>

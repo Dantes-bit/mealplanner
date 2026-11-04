@@ -1,7 +1,8 @@
 from pywebpush import webpush, WebPushException
 from flask import current_app
 import json
-from datetime import date, timedelta
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from mealplanner.models import StorageItem, PushSubscription
 import os
 import tempfile
@@ -46,10 +47,14 @@ def notify_items_for_date(target_date, message_prefix):
         for sub in subscriptions:
             send_push_notification(sub, "MealPlanner", f"{message_prefix}: {names_text}")
 
+def today_oslo():
+    return datetime.now(ZoneInfo('Europe/Oslo')).date()
+
 def notify_expiring_items(days_ahead=2):
-    target_date = date.today() + timedelta(days=days_ahead)
-    notify_items_for_date(target_date, "Expiring soon")
+    notify_items_for_date(today_oslo() + timedelta(days=days_ahead), "Expiring soon")
+
+def notify_expires_today():
+    notify_items_for_date(today_oslo(), "Expires today")
 
 def notify_expired_items():
-    today = date.today()
-    notify_items_for_date(today, "Expired today")
+    notify_items_for_date(today_oslo() - timedelta(days=1), "Expired yesterday")

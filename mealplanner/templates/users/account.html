@@ -103,7 +103,9 @@
                 {% endfor %}
             </div>
         {% endif %}
-
+        {% if current_user == user %}
+            <a class="btn btn-outline-secondary" href="{{ url_for('users.logout') }}">Log out</a>
+        {% endif %}
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">

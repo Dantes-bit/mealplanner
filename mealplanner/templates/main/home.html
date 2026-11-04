@@ -27,7 +27,7 @@
                                         </div>
                                     </a>
                                     {% if meal %}
-                                        <a href="{{ url_for('meals.choose_meal', day=day, meal_id=0) }}" class="calender-remove-btn">&times;</a>
+                                        <a href="{{ url_for('meals.choose_meal', day=day, meal_id=0, undo=meal.id) }}" class="calender-remove-btn">&times;</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -61,7 +61,7 @@
                                     </div>
                                 </a>
                                 {% if meal %}
-                                    <a href="{{ url_for('meals.choose_meal', day=day, meal_id=0) }}" class="calender-remove-btn">&times;</a>
+                                    <a href="{{ url_for('meals.choose_meal', day=day, meal_id=0, undo=meal.id) }}" class="calender-remove-btn">&times;</a>
                                 {% endif %}
                             </div>
                         </div>

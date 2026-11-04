@@ -37,14 +37,16 @@ def create_app(config_class=Config):
     def inject_vapid_key():
         return dict(vapid_public_key=app.config.get('VAPID_PUBLIC_KEY'))
 
-    from mealplanner.push_utils import notify_expiring_items
+    from mealplanner.push_utils import notify_expiring_items, notify_expires_today, notify_expired_items
 
     def run_expiration_check():
         with app.app_context():
             notify_expiring_items(days_ahead=2)
+            notify_expires_today()
+            notify_expired_items()
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(run_expiration_check, 'cron', hour=9, minute=0)
+    scheduler = BackgroundScheduler(timezone='Europe/Oslo')
+    scheduler.add_job(run_expiration_check, 'cron', hour=9, minute=0, misfire_grace_time=3600, coalesce=True)
     scheduler.start()
 
     return app

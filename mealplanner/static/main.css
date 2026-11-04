@@ -438,3 +438,7 @@ a.article-title:hover {
     line-height: 1;
     color: #666666;
 }
+
+.app-header .dropdown-menu {
+    z-index: 1100;
+}
