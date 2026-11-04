@@ -146,3 +146,7 @@ def service_worker():
 @main.route("/terms")
 def terms():
     return render_template('main/terms.html', title='Terms of Service')
+
+@main.route("/offline")
+def offline():
+    return render_template('main/offline.html')

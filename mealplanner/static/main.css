@@ -399,3 +399,42 @@ a.article-title:hover {
     object-fit: cover;
     border-radius: 8px;
 }
+
+@media (pointer: coarse) {
+    .btn-sm {
+        min-height: 40px;
+        min-width: 40px;
+        padding: 8px 12px;
+    }
+
+    .ingredient-item,
+    #suggestions-list li {
+        margin-bottom: 6px;
+    }
+
+    .form-check-input {
+        width: 1.4em;
+        height: 1.4em;
+    }
+}
+
+.install-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #e8eef2;
+    color: #333333;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+}
+
+.install-banner button {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: #666666;
+}

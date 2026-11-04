@@ -82,6 +82,10 @@
     </header>
 
     <main role="main" class="container">
+        <div id="install-banner" class="install-banner d-none">
+            <span>Install MealPlanner: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.</span>
+            <button type="button" onclick="dismissInstallBanner()" aria-label="Dismiss">&times;</button>
+        </div>
         <div class="row">
             <div>
                 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -210,6 +214,22 @@
         }
 
         document.addEventListener('DOMContentLoaded', checkPushStatus);
+
+        (function () {
+            const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            let dismissed = false;
+            try { dismissed = localStorage.getItem('installBannerDismissed') === '1'; } catch (e) {}
+
+            if (isIos && !standalone && !dismissed) {
+                document.getElementById('install-banner').classList.remove('d-none');
+            }
+        })();
+
+        function dismissInstallBanner() {
+            document.getElementById('install-banner').classList.add('d-none');
+            try { localStorage.setItem('installBannerDismissed', '1'); } catch (e) {}
+        }
     </script>
 </body>
 </html>

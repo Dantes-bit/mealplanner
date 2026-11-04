@@ -24,6 +24,7 @@
                 {% set quantity = parts[1] | int if parts|length > 1 and parts[1].isdigit() else 1 %}
                 
                 <li class="ingredient-item d-flex align-items-center" data-base-name="{{ base_name }}" data-quantity="{{ quantity }}">
+                    <input type="checkbox" class="form-check-input bought-check me-2">
                     <span class="ingredient-name">{{ item }}</span>
                     <input type="hidden" name="ingredients" value="{{ item }}">
                     
@@ -46,6 +47,7 @@
                 <br>
                 <button type="submit" name="action" value="save" class="btn btn-primary col-md-2">Save</button>
                 <button type="submit" name="action" value="share" class="btn btn-primary col-md-2">Email</button>
+                <button type="button" class="btn btn-outline-success" onclick="moveCheckedToStorage()">Move checked to storage</button>
             </div>
         </div>
     </form>
@@ -144,6 +146,22 @@
     function removeSuggestion(button) {
         const li = button.closest('li');
         li.remove();
+    }
+    async function moveCheckedToStorage() {
+        const checked = document.querySelectorAll('#ingredient-list .bought-check:checked');
+        if (checked.length === 0) return;
+
+        const names = Array.from(checked).map(c => c.closest('li').dataset.baseName);
+
+        const res = await fetch("{{ url_for('users.mark_bought') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ names: names })
+        });
+
+        if (res.ok) {
+            checked.forEach(c => c.closest('li').remove());
+        }
     }
     </script>
 {% endblock content %}

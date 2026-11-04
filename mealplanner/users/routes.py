@@ -390,7 +390,8 @@ def storage(username):
         expirations = request.form.getlist('storage_expiration')
         StorageItem.query.filter_by(user_id=current_user.id).delete()
         for name, expiration in zip(names, expirations):
-            name = name.strip()
+            name = ' '.join(name.split())
+            name = name[:1].upper() + name[1:]
             if not name:
                 continue
             exp_date = None
@@ -435,3 +436,28 @@ def update_shopping_range(username):
 
     flash('Shopping list range updated!', 'success')
     return redirect(url_for('users.shopping_list', username=user.username))
+
+@users.route("/shopping_list_bought", methods=['POST'])
+@login_required
+def mark_bought():
+    data = request.get_json() or {}
+    names = [' '.join(n.split()) for n in data.get('names', []) if n and n.strip()]
+    names = [n[:1].upper() + n[1:] for n in names]
+
+    existing = {i.name.strip().lower() for i in StorageItem.query.filter_by(user_id=current_user.id).all()}
+    for name in names:
+        if name.lower() not in existing:
+            db.session.add(StorageItem(user_id=current_user.id, name=name))
+            existing.add(name.lower())
+
+    if current_user.shopping_list:
+        def base_name(item):
+            parts = item.rsplit(' x', 1)
+            return (parts[0] if len(parts) > 1 and parts[1].isdigit() else item).strip().lower()
+
+        bought = {n.lower() for n in names}
+        saved = json.loads(current_user.shopping_list)
+        current_user.shopping_list = json.dumps([i for i in saved if base_name(i) not in bought])
+
+    db.session.commit()
+    return jsonify({'status': 'ok'})
